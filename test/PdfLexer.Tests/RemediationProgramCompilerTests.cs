@@ -279,7 +279,7 @@ public sealed class RemediationProgramCompilerTests
             {
                 new BindingRule(
                     "title", BindingTarget.ToSlot(SlotRef.Absolute("/title")), CandidateSelector.Text(Granularity.Paragraph),
-                    Predicates.Text.Equals("Invoice"), cardinality: RuleCardinality.Exactly(1))
+                    Predicates.Text.Equals("Invoice"), cardinality: BindingCardinality.Exactly(1))
             });
         using var session = document.BeginRemediation(new RemediationSessionConfiguration
         {
@@ -288,7 +288,6 @@ public sealed class RemediationProgramCompilerTests
         session.Use(program);
 
         var dryRun = session.DryRun();
-        Assert.Empty(dryRun.RuleEvaluations);
         var bindingSummary = Assert.Single(dryRun.BindingEvaluations);
         Assert.Equal("title", bindingSummary.BindingId);
         Assert.Equal(SlotRef.Absolute("/title"), bindingSummary.ProgramSlot);

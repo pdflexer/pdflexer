@@ -3,14 +3,14 @@ using PdfLexer.Content;
 namespace PdfLexer.Remediation;
 
 /// <summary>One produced artifact graded against the declared inventory.</summary>
-/// <remarks>A null <paramref name="Subtype"/> means untyped: content absorbed by the leftover policy
-/// carries no authored subtype, so it is discriminated by zone alone.</remarks>
+/// <remarks>A null <paramref name="Subtype"/> means an untyped residual and cannot satisfy an
+/// explicit preview artifact declaration.</remarks>
 internal sealed record RemediationArtifactRecord(
     int PageIndex,
     ArtifactSubtype? Subtype,
     PdfRect<double> RelativeBounds,
     string? RuleId = null,
-    string? RuleSetId = null,
+    string? ProgramId = null,
     string? BoundItemId = null,
     ArtifactSemanticSubtype? SemanticSubtype = null);
 
@@ -22,7 +22,7 @@ internal static class RemediationArtifactInventoryMatcher
     /// apply-time subtype adoption cannot disagree.
     /// </summary>
     internal static string? ResolveItemId(
-        IReadOnlyList<RemediationArtifactInventoryItem> items,
+        IReadOnlyList<ArtifactDeclaration> items,
         RemediationArtifactRecord record,
         int pageCount,
         IReadOnlyDictionary<string, TolerancedZoneResolution> zones)
@@ -42,7 +42,7 @@ internal static class RemediationArtifactInventoryMatcher
     }
 
     private static bool Accepts(
-        RemediationArtifactInventoryItem item,
+        ArtifactDeclaration item,
         RemediationArtifactRecord record,
         int pageCount,
         IReadOnlyDictionary<string, TolerancedZoneResolution> zones)
@@ -52,12 +52,7 @@ internal static class RemediationArtifactInventoryMatcher
             return false;
         }
 
-        if (record.Subtype == null)
-        {
-            // Untyped absorbed content is only ever claimed by geometrically qualified furniture.
-            if (item.ZoneId == null) return false;
-        }
-        else if (record.Subtype != item.Subtype)
+        if (record.Subtype == null || record.Subtype != item.Subtype)
         {
             return false;
         }
@@ -66,12 +61,11 @@ internal static class RemediationArtifactInventoryMatcher
             return false;
         }
 
-        return item.ZoneId == null ||
-            (zones.TryGetValue(item.ZoneId, out var zone) && zone.Contains(record.RelativeBounds).IsMatch);
+        return true;
     }
 
     internal static IReadOnlyList<RemediationTemplateDifference> Match(
-        IReadOnlyList<RemediationArtifactInventoryItem> items,
+        IReadOnlyList<ArtifactDeclaration> items,
         IReadOnlyList<RemediationArtifactRecord> records,
         int pageCount,
         IReadOnlyDictionary<int, IReadOnlyDictionary<string, TolerancedZoneResolution>> zonesByPage)
@@ -82,7 +76,7 @@ internal static class RemediationArtifactInventoryMatcher
             return differences;
         }
 
-        var fallbackOwner = items[0].RuleSetId ?? string.Empty;
+        const string fallbackOwner = "program";
         var counts = new Dictionary<(string ItemId, int PageIndex), int>();
         foreach (var page in records.GroupBy(x => x.PageIndex).OrderBy(x => x.Key))
         {
@@ -99,7 +93,7 @@ internal static class RemediationArtifactInventoryMatcher
                     differences.Add(new RemediationTemplateDifference(
                         RemediationTemplateDifferenceKind.UndeclaredArtifact,
                         DiagnosticCode.ArtifactUndeclared,
-                        record.RuleSetId ?? fallbackOwner,
+                        record.ProgramId ?? fallbackOwner,
                         record.BoundItemId,
                         null,
                         $"Page{record.PageIndex + 1}/Artifact[{ordinal}]",
@@ -134,7 +128,7 @@ internal static class RemediationArtifactInventoryMatcher
                     kind == RemediationTemplateDifferenceKind.MissingDeclaredArtifact
                         ? DiagnosticCode.ArtifactMissingDeclared
                         : DiagnosticCode.ArtifactOccurrenceViolation,
-                    item.RuleSetId ?? fallbackOwner,
+                    fallbackOwner,
                     item.Id,
                     $"Artifact:{item.Id}",
                     $"Page{pageIndex + 1}",

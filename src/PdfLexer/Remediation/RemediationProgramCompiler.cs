@@ -73,7 +73,7 @@ public sealed record CompiledBinding(
     public RemediationPredicate Predicate => Definition.Predicate;
     public PageSelector Pages => Definition.Pages;
     public double? MinConfidence => Definition.MinConfidence;
-    public RuleCardinality? Cardinality => Definition.Cardinality;
+    public BindingCardinality? Cardinality => Definition.Cardinality;
 }
 
 /// <summary>Compiles template and binding declarations before document parsing.</summary>

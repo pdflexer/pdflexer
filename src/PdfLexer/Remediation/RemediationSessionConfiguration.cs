@@ -17,9 +17,6 @@ public sealed class RemediationSessionConfiguration
     /// <summary>Whether strict accessibility authoring checks are enabled.</summary>
     public bool StrictConformance { get; init; } = true;
 
-    /// <summary>Policy for content that remains unclaimed after rule evaluation.</summary>
-    public RemediationLeftoverPolicy LeftoverPolicy { get; init; } = RemediationLeftoverPolicy.Flag;
-
     /// <summary>Controls whether suppressions are honored by the diagnostic pass.</summary>
     public RemediationDiagnosticStrictness DiagnosticStrictness { get; init; } = RemediationDiagnosticStrictness.Strict;
 
@@ -34,19 +31,6 @@ public sealed class RemediationSessionConfiguration
 
     /// <summary>Controls whether the session is an authoring dry-run or an enforced production run.</summary>
     public RemediationRunMode RunMode { get; init; } = RemediationRunMode.Enforced;
-}
-
-/// <summary>
-/// Policy for unclaimed rendered content after remediation rules run.
-/// </summary>
-public enum RemediationLeftoverPolicy
-{
-    /// <summary>Report unclaimed content as a diagnostic.</summary>
-    Flag,
-    /// <summary>Automatically mark unclaimed content as layout artifact.</summary>
-    AutoArtifact,
-    /// <summary>Fail commit when unclaimed content remains.</summary>
-    FailFast
 }
 
 /// <summary>

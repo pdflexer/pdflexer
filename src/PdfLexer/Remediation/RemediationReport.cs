@@ -18,13 +18,10 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationClaim>? skippedClaims = null,
         IReadOnlyList<string>? diagnostics = null,
         IReadOnlyList<DiagnosticSuppression>? suppressions = null,
-        IReadOnlyList<RuleEvaluationSummary>? ruleEvaluations = null,
-        IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null,
         IReadOnlyList<RemediationPredicateTrace>? predicateTraces = null,
         IReadOnlyList<RemediationAssertionOutcome>? assertionOutcomes = null,
         RemediationSemanticTree? plannedSemanticTree = null,
         IReadOnlyList<RemediationUnaccountedContent>? unaccountedContent = null,
-        IReadOnlyList<RemediationAnnotationInventoryItem>? annotationInventory = null,
         IReadOnlyList<string>? warnings = null,
         IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null,
         IReadOnlyList<RemediationTemplateAssemblyItem>? templateAssembly = null,
@@ -40,13 +37,10 @@ public sealed class RemediationReport
         RuntimeDiagnostics = runtimeDiagnostics ?? Array.Empty<RemediationRuntimeDiagnostic>();
         Diagnostics = diagnostics ?? RuntimeDiagnostics.Select(x => x.Message).ToArray();
         Suppressions = suppressions ?? Array.Empty<DiagnosticSuppression>();
-        RuleEvaluations = ruleEvaluations ?? Array.Empty<RuleEvaluationSummary>();
-        AutoArtifacts = autoArtifacts ?? Array.Empty<RemediationAutoArtifactOutcome>();
         PredicateTraces = predicateTraces ?? Array.Empty<RemediationPredicateTrace>();
         AssertionOutcomes = assertionOutcomes ?? Array.Empty<RemediationAssertionOutcome>();
         PlannedSemanticTree = plannedSemanticTree ?? new RemediationSemanticTree(Array.Empty<RemediationSemanticNode>());
         UnaccountedContent = unaccountedContent ?? Array.Empty<RemediationUnaccountedContent>();
-        AnnotationInventory = annotationInventory ?? Array.Empty<RemediationAnnotationInventoryItem>();
         Warnings = warnings ?? RuntimeDiagnostics
             .Where(x => x.Disposition is RemediationDiagnosticDisposition.Warning or RemediationDiagnosticDisposition.WorkItem)
             .Select(x => x.Message)
@@ -100,12 +94,6 @@ public sealed class RemediationReport
     /// <summary>Diagnostic suppressions configured on the session.</summary>
     public IReadOnlyList<DiagnosticSuppression> Suppressions { get; }
 
-    /// <summary>Aggregate and page-level counters for every composed rule, including rules with no matches.</summary>
-    public IReadOnlyList<RuleEvaluationSummary> RuleEvaluations { get; }
-
-    /// <summary>Text content planned for or handled by the automatic artifact policy.</summary>
-    public IReadOnlyList<RemediationAutoArtifactOutcome> AutoArtifacts { get; }
-
     /// <summary>Opt-in traces retained for rejected predicate inputs.</summary>
     public IReadOnlyList<RemediationPredicateTrace> PredicateTraces { get; }
 
@@ -117,9 +105,6 @@ public sealed class RemediationReport
 
     /// <summary>Painting content left unclaimed when the leftover policy does not account for it.</summary>
     public IReadOnlyList<RemediationUnaccountedContent> UnaccountedContent { get; }
-
-    /// <summary>Annotations present in the input and whether they cap strict conformance.</summary>
-    public IReadOnlyList<RemediationAnnotationInventoryItem> AnnotationInventory { get; }
 
     /// <summary>Returns a retained rejection trace for a rule and candidate.</summary>
     public RemediationPredicateTrace? ExplainRejection(string ruleId, string candidateId) =>

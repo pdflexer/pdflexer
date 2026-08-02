@@ -218,21 +218,6 @@ internal sealed class RemediateCmd
                 $"cross-page-binding: binding={outcome.RuleId} pages=" +
                 string.Join(",", outcome.PageIndexes.Select(x => x + 1)));
         }
-        if (report.AutoArtifacts.Count > 0)
-        {
-            Console.WriteLine($"Auto-artifacts: {report.AutoArtifacts.Count}");
-            foreach (var artifact in report.AutoArtifacts)
-            {
-                Console.WriteLine(
-                    $"auto-artifact: {artifact.Disposition} page={artifact.PageIndex + 1} " +
-                    $"kind={artifact.CandidateKind} candidate={artifact.CandidateId ?? "<none>"} " +
-                    $"source={artifact.SourceReference} bounds={artifact.BoundingBox} " +
-                    $"inventory={artifact.InventoryItemId ?? "<none>"} " +
-                    $"resource={artifact.ResourceIdentity ?? "<none>"} name={artifact.ResourceName ?? "<none>"} " +
-                    $"reuse={artifact.ResourceUseCount} text=\"{Preview(artifact.Text)}\"");
-            }
-        }
-
         if (report.UnaccountedContent.Count > 0)
         {
             Console.WriteLine($"Unaccounted painting content: {report.UnaccountedContent.Count}");
@@ -245,22 +230,6 @@ internal sealed class RemediateCmd
                     $"resource={item.ResourceIdentity ?? "<none>"} name={item.ResourceName ?? "<none>"} " +
                     $"reuse={item.ResourceUseCount} raw=\"{Preview(item.RawText ?? string.Empty)}\" " +
                     $"normalized=\"{Preview(item.NormalizedText ?? string.Empty)}\"");
-            }
-        }
-
-        if (report.AnnotationInventory.Count > 0)
-        {
-            Console.WriteLine($"Input annotations: {report.AnnotationInventory.Count}");
-            foreach (var annotation in report.AnnotationInventory)
-            {
-                Console.WriteLine(
-                    $"annotation: disposition={annotation.Disposition} candidate={annotation.CandidateId ?? "<none>"} " +
-                    $"page={annotation.PageIndex + 1} subtype={annotation.Subtype} " +
-                    $"bounds={annotation.Bounds?.ToString() ?? "<none>"} hidden={annotation.Hidden} " +
-                    $"off-page={annotation.OffPage} struct-parent={annotation.HasStructParent} " +
-                    $"rule={annotation.RuleId ?? "<none>"} tag={annotation.ProducedTag ?? "<none>"} " +
-                    $"destination={annotation.DestinationKind} blocks-conformance={annotation.BlocksConformance} " +
-                    $"reason=\"{annotation.Reason}\"");
             }
         }
 

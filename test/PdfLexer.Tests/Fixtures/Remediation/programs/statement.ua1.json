@@ -29,9 +29,9 @@
           "children": []
         },
         {
-          "tag": "P",
-          "name": "ship-to-value",
-          "children": []
+          "kind": "fragmentMount",
+          "fragment": "address",
+          "alias": "ship-to-address"
         }
       ]
     }
@@ -108,6 +108,20 @@
       }
     },
     {
+      "id": "ship-to-address-line",
+      "target": {
+        "slot": "/ship-to-address/line"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Same as billing"
+      }
+    },
+    {
       "id": "ship-to-label",
       "target": {
         "slot": "/ship-to-label"
@@ -121,23 +135,7 @@
         "text": "Ship To"
       }
     },
-    {
-      "id": "ship-to-value",
-      "target": {
-        "slot": "/ship-to-value"
-      },
-      "candidates": {
-        "kind": "text",
-        "granularity": "Line"
-      },
-      "predicate": {
-        "kind": "and",
-        "predicates": [
-          { "kind": "textEquals", "text": "Same as billing" },
-          { "kind": "anchorRelative", "relation": "Below", "id": "ship-to-label-anchor" }
-        ]
-      }
-    },
+
     {
       "id": "page-footer",
       "target": {

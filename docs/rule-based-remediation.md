@@ -94,10 +94,7 @@ through assembly, assertions, and reports.
 
 Slot-relative anchors resolve from typed applied claims after every producer of the referenced slot
 has completed. A missing bounded claim is unresolved and multiple bounded claims are ambiguous; the
-anchor's page selector is retained. Program sessions are isolated from the legacy path and reject
-injected legacy rules while a compiled program is active. Legacy `Rule`/`RuleSet` execution and its
-stage/pass-oriented reports remain available for migration, but are not part of preview program
-semantics.
+anchor's page selector is retained. The legacy `Rule`/`RuleSet` engine has been retired and deleted; all remediation operations execute via `RemediationProgram`.
 
 Preview reports expose structured runtime diagnostics with `Error`, `WorkItem`, `Warning`, and
 `Acknowledged` dispositions, plus program-facing binding evaluations. The existing string diagnostic
@@ -265,18 +262,18 @@ Use `ReorderSiblings` only when the intended semantic order differs from that de
 the minimum matching confidence, `Or` uses the selected matching branch, and `Not` preserves its
 operand confidence. See [Confidence](#confidence).
 
-## Rule Model
+## Program Binding Model
 
-Rules live in a `RuleSet`. A rule set also carries shared anchors, toleranced zones, flow regions,
-text normalization, and semantic assertions.
+Bindings live in a `RemediationProgram`. A program carries a selected `RemediationTemplate`, anchors, declared artifacts, bindings, and assertions.
 
 ```csharp
-var ruleSet = new RuleSet(
-    "invoice-v2",
-    rules,
+var program = new RemediationProgram(
+    "invoice-v1",
+    template,
+    bindings,
     anchors,
-    tolerancedZones: zones,
-    flowRegions: flows);
+    artifacts: artifacts,
+    assertions: assertions);
 ```
 
 Every `Rule` has the same shape:
@@ -808,109 +805,49 @@ interiors or discarded inputs.
 ## Complete Invoice Example
 
 ```csharp
-static RuleSet BuildInvoiceRules()
+static RemediationProgram BuildInvoiceProgram()
 {
+    var template = new RemediationTemplate(
+        "invoice", "1", PdfUaProfile.PdfUa1,
+        new RemediationTemplateNode("Document", children: new[]
+        {
+            new RemediationTemplateNode("H1", "title"),
+            new RemediationTemplateNode("P", "invoice-number"),
+            new RemediationTemplateNode("Sect", "bill-to", children: new[]
+            {
+                new RemediationTemplateNode("P", "line", occurrence: RemediationStructuralOccurrence.ZeroOrMore)
+            })
+        }));
+
     var anchors = new[]
     {
-        RemediationAnchor.Selector(
-            "invoice-label",
-            Granularity.Line,
-            Predicates.Text.Matches(@"^Invoice\s*#$")
-                .And(Predicates.Geo.In(LayoutCoord.Zone(NamedLayoutZone.Header))),
-            AnchorSelection.RequiredSingle),
-
-        RemediationAnchor.Selector(
-            "invoice-number-anchor",
-            Granularity.Word,
-            Predicates.Text.Matches(@"^INV-\d+$")
-                .And(Predicates.Anchor.RightOf("invoice-label", maxDistance: 180))
-                .And(Predicates.Anchor.SameRowAs("invoice-label", tolerance: 4)),
-            AnchorSelection.RequiredSingle),
-
-        RemediationAnchor.TextLabel("bill-to-label", "Bill To"),
-        RemediationAnchor.TextLabel("ship-to-label", "Ship To"),
-        RemediationAnchor.TextLabel("line-items-header", "Item"),
-        RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
+        RemediationAnchor.TextLabel("invoice-label", "Invoice #"),
+        RemediationAnchor.TextLabel("bill-to-label", "Bill To")
     };
 
-    var zones = new[]
+    var bindings = new[]
     {
-        new TolerancedZone("footer", LayoutCoord.MarginRelative(bottom: 42), Tolerance: 6)
-    };
-
-    var flows = new[]
-    {
-        new FlowRegion(
-            "bill-to-address",
-            FlowBoundary.Anchor("bill-to-label"),
-            FlowBoundary.Anchor("ship-to-label")),
-
-        new FlowRegion(
-            "line-items",
-            FlowBoundary.Anchor("line-items-header"),
-            FlowBoundary.Anchor("subtotal-label"))
-    };
-
-    var rules = new[]
-    {
-        new Rule(
-            "invoice-title",
-            RemediationActions.Tag("H1"),
-            Predicates.Text.StartsWith("Invoice"),
+        new BindingRule(
+            "title",
+            BindingTarget.ToSlot(SlotRef.Parse("/title")),
             CandidateSelector.Text(Granularity.Line),
+            Predicates.Text.StartsWith("Invoice"),
             pages: PageSelector.First),
 
-        new Rule(
+        new BindingRule(
             "invoice-number",
-            RemediationActions.Tag("P"),
-            Predicates.Geo.In(LayoutCoord.NamedAnchor("invoice-number-anchor", LayoutCoordExpansion.Inflate(2))),
-            Granularity.Word),
+            BindingTarget.ToSlot(SlotRef.Parse("/invoice-number")),
+            CandidateSelector.Text(Granularity.Word),
+            Predicates.Text.Matches(@"^INV-\d+$")),
 
-        new Rule(
+        new BindingRule(
             "bill-to-line",
-            RemediationActions.Tag("Span"),
-            Predicates.Flow.InFlowRegion("bill-to-address"),
-            Granularity.Line),
-
-        new Rule(
-            "line-item-header-cell",
-            RemediationActions.Tag("Span"),
-            Predicates.Anchor.SameRowAs("line-items-header", tolerance: 4),
-            Granularity.Word),
-
-        new Rule(
-            "line-item-cell",
-            RemediationActions.Tag("Span"),
-            Predicates.Flow.InFlowRegion("line-items"),
-            Granularity.Word),
-
-        new Rule(
-            "page-footer",
-            RemediationActions.Artifact(ArtifactSubtype.Pagination),
-            Predicates.Flow.InZone("footer"),
-            Granularity.Line),
-
-        new Rule(
-            "line-items-table",
-            RemediationActions.TableOverFlattenedCells(
-                ClaimPredicates.FromRule("line-item-header-cell")
-                    .Or(ClaimPredicates.FromRule("line-item-cell")),
-                ClaimPredicates.FromRule("line-item-header-cell"),
-                72, 250, 450, 600),
-            stage: Stage.Group),
-
-        new Rule(
-            "bill-to-paragraph",
-            RemediationActions.MergeTo("P", ClaimPredicates.FromRule("bill-to-line")),
-            stage: Stage.Group),
-
-        new Rule(
-            "document-lang",
-            RemediationActions.Lang(ClaimPredicates.StatusIs(ClaimStatus.Applied), "en-US"),
-            stage: Stage.Refine)
+            BindingTarget.ToSlot(SlotRef.Parse("/bill-to/line")),
+            CandidateSelector.Text(Granularity.Line),
+            Predicates.Anchor.RightOf("bill-to-label", maxDistance: 200))
     };
 
-    return new RuleSet("invoice-v2", rules, anchors, zones, flows);
+    return new RemediationProgram("invoice-v1", template, bindings, anchors);
 }
 ```
 

@@ -859,12 +859,12 @@ public static class SerializedRemediationProgram
         };
     }
 
-    private static RuleCardinality? ParseCardinality(JsonElement? json)
+    private static BindingCardinality? ParseCardinality(JsonElement? json)
     {
         if (json is not { } value) return null;
         RejectUnknown(value, "minMatches", "maxMatches", "scope");
-        return new RuleCardinality(Int(value, "minMatches") ?? 0, Int(value, "maxMatches"),
-            EnumValue<RuleCardinalityScope>(value, "scope") ?? RuleCardinalityScope.Document);
+        return new BindingCardinality(Int(value, "minMatches") ?? 0, Int(value, "maxMatches"),
+            EnumValue<BindingCardinalityScope>(value, "scope") ?? BindingCardinalityScope.Document);
     }
 
     private static bool Has(JsonElement json, string name) => json.TryGetProperty(name, out _);

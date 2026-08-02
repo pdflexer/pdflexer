@@ -28,7 +28,7 @@ public abstract record RemediationAnchor
 
     internal TextNormalizationOptions TextNormalization { get; init; } = TextNormalizationOptions.Default;
 
-    internal string? RuleSetId { get; init; }
+    internal string? ProgramId { get; init; }
     
     /// <summary>Debug representation used in validation and reports.</summary>
     public abstract string DebugString { get; }

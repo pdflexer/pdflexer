@@ -282,8 +282,8 @@ public sealed record RemediationClaim(
     /// <summary>Stable claim identifier.</summary>
     public ClaimId ClaimId { get; init; } = ClaimId.New();
 
-    /// <summary>Rule-set origin, when available.</summary>
-    public string? RuleSetId { get; init; }
+    /// <summary>Program origin, when available.</summary>
+    public string? ProgramId { get; init; }
 
     /// <summary>Effective rule normalization used for report summaries.</summary>
     public TextNormalizationOptions TextNormalization { get; init; } = TextNormalizationOptions.Default;
@@ -334,16 +334,7 @@ public sealed record RemediationClaim(
     public RemediationActionKind? ActionKind => Action?.Kind;
 
     /// <summary>Structure tag or artifact marker produced by the claim.</summary>
-    public string ProducedTag => Action switch
-    {
-        TagRemediationAction tag => tag.Name.Value,
-        ArtifactRemediationAction => "Artifact",
-        TableRemediationAction => "Table",
-        GroupRemediationAction group => group.ParentTag.Value,
-        MergeRemediationAction merge => merge.TargetTag.Value,
-        AdoptAnnotationRemediationAction => Tag,
-        _ => Tag
-    };
+    public string ProducedTag => Action is ArtifactRemediationAction ? "Artifact" : Tag;
 
     /// <summary>Marked-content and structure bindings created for this claim.</summary>
     public IReadOnlyList<RemediationAppliedBinding> AppliedBindings => _appliedBindings;
@@ -351,10 +342,7 @@ public sealed record RemediationClaim(
     /// <summary>Existing claims consumed by this claim.</summary>
     public IReadOnlyList<RemediationClaim> RelatedClaims => _relatedClaims;
 
-    /// <summary>
-    /// Resolved table hierarchy shared by semantic planning and materialization.
-    /// </summary>
-    internal RemediationTablePlan? TablePlan { get; set; }
+
 
     internal RemediationClaim? AnnotationIntoClaim { get; set; }
     internal RemediationClaim? AnnotationDestinationClaim { get; set; }
@@ -418,16 +406,7 @@ public sealed record RemediationClaim(
     }
 }
 
-internal sealed record RemediationTablePlan(IReadOnlyList<RemediationTableRowPlan> Rows);
 
-internal sealed record RemediationTableRowPlan(
-    int PageIndex,
-    IReadOnlyList<RemediationTableCellPlan> Cells);
-
-internal sealed record RemediationTableCellPlan(
-    RemediationClaim Claim,
-    int ColumnIndex,
-    string Tag);
 
 /// <summary>
 /// Binding between a remediation claim, marked content, and structure nodes.

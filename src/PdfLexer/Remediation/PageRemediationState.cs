@@ -7,8 +7,6 @@ namespace PdfLexer.Remediation;
 
 internal sealed class PageRemediationState
 {
-    private readonly Dictionary<Stage, IReadOnlyList<RemediationClaim>> _claimSnapshots = new();
-    private readonly List<string> _planDiagnostics = new();
     private int _nextMcid;
 
     public PageRemediationState(
@@ -61,10 +59,6 @@ internal sealed class PageRemediationState
     public IReadOnlyDictionary<string, TolerancedZoneResolution> ArtifactZones { get; internal set; } =
         new Dictionary<string, TolerancedZoneResolution>(StringComparer.Ordinal);
 
-    public IReadOnlyDictionary<Stage, IReadOnlyList<RemediationClaim>> ClaimSnapshots => _claimSnapshots;
-
-    public IReadOnlyList<string> PlanDiagnostics => _planDiagnostics;
-
     public int AllocateMcid()
     {
         IsDirty = true;
@@ -76,23 +70,4 @@ internal sealed class PageRemediationState
         IsDirty = true;
     }
 
-    public void SetClaimSnapshot(Stage stage, IReadOnlyList<RemediationClaim> claims)
-    {
-        _claimSnapshots[stage] = new ReadOnlyCollection<RemediationClaim>(claims.ToList());
-    }
-
-    public IReadOnlyList<RemediationClaim> GetClaimSnapshot(Stage stage)
-    {
-        return _claimSnapshots.TryGetValue(stage, out var claims)
-            ? claims
-            : Array.Empty<RemediationClaim>();
-    }
-
-    public void AddPlanDiagnostic(string diagnostic)
-    {
-        if (!string.IsNullOrWhiteSpace(diagnostic))
-        {
-            _planDiagnostics.Add(diagnostic);
-        }
-    }
 }

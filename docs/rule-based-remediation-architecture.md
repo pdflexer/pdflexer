@@ -14,36 +14,17 @@ language as shipped; this says why it is shaped that way and which parts are not
 | [rule-based-remediation-plan.md](rule-based-remediation-plan.md) | Milestones, gates, sequencing |
 | [rule-based-remediation-corpus.md](rule-based-remediation-corpus.md) | The input corpus gaps are validated against |
 
-### Current migration boundary
+### Retired legacy engine and active program model
 
-The greenfield migration preview starts with `pdflexer.remediation.program.preview1`: one `RemediationProgram`
-selects a prescriptive `RemediationTemplate`, and `BindingRule` instances target canonical `SlotRef`
-paths or declared artifacts. The compiler validates the closed template and produces deterministic
-dependency layers before page parsing. The preview runtime executes that compiled program directly;
-it is not lowered into the legacy rule/stage engine. The existing sections below describe the
-architectural decisions that led to this model and the staged engine that is being retired; they
-remain useful for understanding the invariants, but new families should author against the program
-API documented in the reference guide.
+The legacy `Rule`/`RuleSet` execution engine has been fully retired and deleted. `RemediationProgram` is the sole execution model: one `RemediationProgram` selects a prescriptive `RemediationTemplate`, and `BindingRule` instances target canonical `SlotRef` paths or declared artifacts. The compiler validates the closed template and produces deterministic dependency layers before page parsing. The runtime executes that compiled program directly.
 
-### Preview runtime milestone
+### Program runtime architecture
 
-The native preview path has a deliberately narrow boundary. A compiled program executes its
-dependency layers in order, with each layer reading an immutable snapshot from completed layers.
-Bindings within one layer are independent and resolve deterministically by binding id. Typed binding
-and slot references remain attached to claims, assembly records, assertions, and reports; program
-behavior does not depend on legacy rule ids, stages, or `groupPass`.
+A compiled program executes its dependency layers in order, with each layer reading an immutable snapshot from completed layers. Bindings within one layer are independent and resolve deterministically by binding id. Typed binding and slot references remain attached to claims, assembly records, assertions, and reports; program behavior does not depend on legacy rule ids, stages, or `groupPass`.
 
-Slot anchors resolve from applied claims after all producers of the referenced slot have completed.
-Zero bounded claims is unresolved and more than one is ambiguous, with the anchor's page selector
-preserved. Program sessions are isolated from legacy `Rule`/`RuleSet` execution and reject
-injected legacy rules while a program is active. Legacy execution and its stage/pass-oriented report
-contract remain available for migration.
+Slot anchors resolve from applied claims after all producers of the referenced slot have completed. Zero bounded claims is unresolved and more than one is ambiguous, with the anchor's page selector preserved. Legacy `Rule`/`RuleSet` execution paths have been completely removed.
 
-Preview runtime diagnostics are structured with `Error`, `WorkItem`, `Warning`, and
-`Acknowledged` dispositions. Authoring reports missing matches, underfilled bindings or slots, and
-unaccounted content as work items; Enforced promotes those conditions to commit-blocking errors.
-Ambiguity, conflicts, illegal structure, identity collisions, and materialization divergence remain
-errors. Existing string diagnostics and legacy rule evaluations are compatibility views.
+Runtime diagnostics are structured with `Error`, `WorkItem`, `Warning`, and `Acknowledged` dispositions. Authoring reports missing matches, underfilled bindings or slots, and unaccounted content as work items; Enforced promotes those conditions to commit-blocking errors. Ambiguity, conflicts, illegal structure, identity collisions, and materialization divergence remain errors.
 
 Before assembly, the preview runtime recursively compares declared direct-child order at the Document
 root and materialized composite containers with available content-stream and geometric
@@ -705,13 +686,9 @@ rule sets; **additive** means it can be added later without disturbing them.
 
 | Gap | Impact | Deferral cost |
 | --- | --- | --- |
-| Slot declaration namespace is flat | No reusable template fragments; manual disambiguation for nested repetition | **Breaking** |
-| Fragment mount aliases and relative references are not settled | Reusable fragments cannot yet promise unambiguous mounted paths or relative-reference behavior | **Breaking**, before fragments |
-| `Pages`/`SpansPages` live on template nodes | Structure/assertion factoring erodes as constraints accumulate | **Breaking** |
 | Group stage may be vestigial | Its premise — undeclared hierarchy — was abolished by the invariant. What remains (`BindOver`, `TableOver`) is partitioning wearing a rule's clothes, and it is a second hierarchy mechanism to keep aligned with the first | Unscheduled by design; see [the invariant](#the-invariant-puts-the-group-stage-in-question) |
 | Four declarations for one idea — a named place | `NamedLayoutZone`, `TolerancedZone`, `FlowRegion`, and anchors do not compose: tolerance lives on one type and continuation on another, so a fuzzy band that continues across pages is inexpressible | **Breaking** for the declaration surface — RRM-043 |
-| Descriptive mode still present | Two materialization paths to maintain and test | Additive (removal) |
-| One template per composed rule set | Families cannot share declared structure even where it is genuinely identical | Additive, after fragments |
+| One template per composed program | Families cannot share declared structure even where it is genuinely identical | Additive, after fragments |
 | Artifact accounting is a parallel declaration system | "Content matched nothing declared" answers to two vocabularies (`PrescriptiveUnaccountedContent`, `ArtifactUndeclared`) | Additive |
 
 ### Language
@@ -719,9 +696,7 @@ rule sets; **additive** means it can be added later without disturbing them.
 | Gap | Impact | Deferral cost | Tracker |
 | --- | --- | --- | --- |
 | No alternation or unordered groups | Variable families are forced to over-use `Optional`, which weakens the contract toward nothing | Additive — see the note below; cheaper than it looks | — |
-| Declaration ambiguity check is coupled to binding state | A prescriptive template cannot be declaration-validated before its rules exist, which is step 1 of the authoring process | Defect, not a design gap | — |
-| Repeating-composite occurrence boundaries are not settled in preview1 | Partitioning, nested boundaries, and failure behavior need an explicit contract before repeating composites become part of the preview language | Breaking, before repeating composites | RRM-042 |
-| Flow-region instances are page-granular and unused within a page | `FlowRegionInstanceId(regionId, activationIndex)` and `FindSharedInstance` already express "did new content start a new occurrence," but both resolver paths activate at most once per page (`DocumentFlowRegionResolver.cs:90`, `:138`), and `BindOver` only consults the instance when claims cross a page | Additive, and correct under either outcome of the Group question — both designs consume the same instances | RRM-042 |
+| Flow-region instances are page-granular and unused within a page | `FlowRegionInstanceId(regionId, activationIndex)` and `FindSharedInstance` already express "did new content start a new occurrence," but both resolver paths activate at most once per page, and `BindOver` only consults the instance when claims cross a page | Additive, and correct under either outcome of the Group question — both designs consume the same instances | RRM-042 |
 | Content-independent attributes require a rule | A fixed `/Lang` or `TH` `/Scope` costs a Refine rule that re-selects content already bound to the slot needing the attribute | Additive | RRM-044 |
 | Region-scoped accounting is not compositional | Preview inventories each prescriptive text and graphical leftover, but guarded region absorption, overlap precedence, and emitted artifact metadata remain deferred | Additive | RRM-045 |
 | No split primitive | One content item carrying two roles — `Lbl` + `LBody`, label + value — is unreachable | Additive | RRM-021 |
@@ -783,19 +758,6 @@ the finalized runtime claims when they overfill or make a slot anchor ambiguous.
 
 ## Migration
 
-Prescriptive-only means every existing rule set needs a template. One of forty-two is prescriptive
-today; six declare a descriptive template; the rest declare none.
+The legacy `Rule`/`RuleSet` engine and all 42 legacy generated rule sets have been deleted in Step 1 of the migration plan. All remediation operations execute via `RemediationProgram`.
 
-The order that works:
-
-1. Rule sets with a descriptive template: flip the mode, add slot ids and `Bind` actions. The tree
-   they produce is already validated against the declared shape, so the diff is mechanical.
-2. Rule sets with no template: hand-author a first-draft template, then use the existing
-   `TemplateDifferences` report to converge. This is the **one** narrow case where deriving a draft
-   template from current output is legitimate — the rules already exist and are known-good, and the
-   template is being back-filled rather than defined. It is a one-time bootstrap per rule set, never
-   a refresh loop, and the draft must be reviewed before it is frozen.
-3. Remove descriptive mode once the corpus is migrated.
-
-Do not add a regenerate-template step to CI. A template that tracks its rules automatically asserts
-nothing.
+The migration debt gap ("41 of 42 generated rule sets predate prescriptive mode") has been closed by deleting the legacy engine and rule sets rather than maintaining dual runtime paths. New document families author against `RemediationProgram` with a closed `RemediationTemplate` directly.

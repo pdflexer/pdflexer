@@ -148,10 +148,6 @@ veraPDF integration that silently stops finding violations still passes.
 Port these onto the program corpus under `VeraPdfFactAttribute` (it already skips when veraPDF is
 absent, so this costs nothing in environments without it).
 
-**The CLI has no test.** `RemediateCmdTests.cs` was deleted and `RemediateCmd.cs` was rewritten
-(+44/−121) in the same change. `pdfctl remediate` is the only shipped consumer of the program
-format and is currently unexercised.
-
 ---
 
 ## Step 4 — Deepen the corpus where features shipped thin

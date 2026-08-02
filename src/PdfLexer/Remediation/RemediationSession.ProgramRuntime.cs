@@ -6,8 +6,7 @@ using PdfLexer.Writing;
 namespace PdfLexer.Remediation;
 
 /// <summary>
-/// Native execution path for compiled preview programs. This file deliberately does not construct
-/// or inspect legacy Rule, RuleSet, Stage, or group-pass objects.
+/// Native execution path for compiled preview programs.
 /// </summary>
 public sealed partial class RemediationSession
 {
@@ -73,7 +72,6 @@ public sealed partial class RemediationSession
         var pageStates = BuildPageStates();
         var allClaims = new List<RemediationClaim>();
         var skippedClaims = new List<RemediationClaim>();
-        var autoArtifacts = new List<RemediationAutoArtifactOutcome>();
         var unaccountedContent = new List<RemediationUnaccountedContent>();
         ExecuteProgramLayers(
             compiled,
@@ -83,32 +81,14 @@ public sealed partial class RemediationSession
             diagnostics,
             bindingRuns);
 
-        var anchors = compiled.Program.Anchors
-            .ToDictionary(x => x.Id, StringComparer.Ordinal);
-        var emptyZones = new Dictionary<string, TolerancedZone>(StringComparer.Ordinal);
-        var emptyFlows = new Dictionary<string, FlowRegion>(StringComparer.Ordinal);
-        var documentFlows = new DocumentFlowIndex(
-            new Dictionary<int, Dictionary<string, FlowRegionResolution>>(),
-            Array.Empty<RemediationCandidate>(),
-            allClaims);
-
         foreach (var pageState in pageStates)
         {
-            pageState.ArtifactZones = ResolveArtifactZones(
-                pageState,
-                allClaims,
-                anchors,
-                emptyZones,
-                emptyFlows,
-                documentFlows,
-                diagnostics);
+            pageState.ArtifactZones = new Dictionary<string, TolerancedZoneResolution>();
             ApplyLeftoverPolicy(
                 pageState,
                 pageState.TextOwnership,
                 diagnostics,
-                autoArtifacts,
                 unaccountedContent,
-                apply,
                 compiled.Program.TextNormalization);
         }
 
@@ -123,7 +103,6 @@ public sealed partial class RemediationSession
                 if (claimsByOccurrence.TryGetValue(claimId, out var claim))
                     claim.OccurrenceIdentity = partition.OccurrenceIdentity;
         }
-        var template = RemediationProgramTemplateAdapter.Create(compiled);
         var sourceTree = RemediationSemanticTree.FromClaims(compiled, allClaims);
         var claimsById = allClaims
             .GroupBy(x => x.ClaimId)
@@ -139,9 +118,9 @@ public sealed partial class RemediationSession
             .Select(x => x.Reference.Path[1..])
             .ToHashSet(StringComparer.Ordinal);
 
-        foreach (var difference in RemediationStructuralTemplateMatcher.Match(
+        foreach (var difference in RemediationProgramTemplateMatcher.Match(
                      compiled.Program.Id,
-                     template,
+                     compiled.Program.Template,
                      semanticTree,
                      _document.Pages.Count,
                      boundSlots))
@@ -159,7 +138,6 @@ public sealed partial class RemediationSession
             compiled,
             pageStates,
             allClaims,
-            autoArtifacts,
             diagnostics));
 
         if (apply && !HasBlockingProgramDiagnostics(diagnostics))
@@ -175,7 +153,7 @@ public sealed partial class RemediationSession
                 allClaims,
                 allClaims
                     .Where(x => x.ProgramSlot != null)
-                    .GroupBy(x => (x.RuleSetId, x.RuleId))
+                    .GroupBy(x => (x.ProgramId, x.RuleId))
                     .ToDictionary(x => x.Key, x => x.First().ProgramSlot!.Path[1..]));
             var plannedShape = SemanticShape(semanticTree);
             var actualShape = SemanticShape(actualTree);
@@ -198,9 +176,9 @@ public sealed partial class RemediationSession
 
             var plannedKeys = templateDifferences.Select(TemplateDifferenceKey)
                 .ToHashSet(StringComparer.Ordinal);
-            foreach (var actualDifference in RemediationStructuralTemplateMatcher.Match(
+            foreach (var actualDifference in RemediationProgramTemplateMatcher.Match(
                          compiled.Program.Id,
-                         template,
+                         compiled.Program.Template,
                          actualTree,
                          _document.Pages.Count,
                          boundSlots))
@@ -224,7 +202,6 @@ public sealed partial class RemediationSession
             warnings,
             bindingSummaries,
             orderComparisons,
-            autoArtifacts,
             assertions,
             semanticTree,
             unaccountedContent,
@@ -267,16 +244,10 @@ public sealed partial class RemediationSession
             skippedClaims: report.SkippedClaims,
             diagnostics: report.Diagnostics,
             suppressions: _suppressions,
-            ruleEvaluations: report.RuleEvaluations,
-            autoArtifacts: report.AutoArtifacts.Select(x => x with
-            {
-                Disposition = RemediationAutoArtifactDisposition.Applied
-            }).ToList(),
             predicateTraces: report.PredicateTraces,
             assertionOutcomes: report.AssertionOutcomes,
             plannedSemanticTree: report.PlannedSemanticTree,
             unaccountedContent: report.UnaccountedContent,
-            annotationInventory: report.AnnotationInventory,
             warnings: report.Warnings,
             templateDifferences: report.TemplateDifferences,
             templateAssembly: report.TemplateAssembly,
@@ -840,7 +811,7 @@ public sealed partial class RemediationSession
             Status = status,
             SelectorDebugString = binding.Predicate.DebugString,
             Action = action,
-            RuleSetId = compiled.Program.Id,
+            ProgramId = compiled.Program.Id,
             SlotId = slot?.Path[1..],
             TextNormalization = compiled.Program.TextNormalization
         };
@@ -884,7 +855,7 @@ public sealed partial class RemediationSession
             return;
         }
 
-        if (cardinality.Scope == RuleCardinalityScope.Document)
+        if (cardinality.Scope == BindingCardinalityScope.Document)
         {
             if (!cardinality.Accepts(run.InputsMatched))
             {
@@ -986,7 +957,6 @@ public sealed partial class RemediationSession
         CompiledRemediationProgram compiled,
         IReadOnlyList<PageRemediationState> pageStates,
         IReadOnlyList<RemediationClaim> claims,
-        IReadOnlyList<RemediationAutoArtifactOutcome> autoArtifacts,
         List<string> diagnostics)
     {
         if (ArtifactInventory.Count == 0)
@@ -1017,9 +987,6 @@ public sealed partial class RemediationSession
                     artifact.SemanticSubtype));
             }
         }
-        records.AddRange(autoArtifacts.Select(x =>
-            new RemediationArtifactRecord(x.PageIndex, null, x.RelativeBoundingBox)));
-
         var zonesByPage = pageStates.ToDictionary(x => x.PageIndex, x => x.ArtifactZones);
         return RemediationArtifactInventoryMatcher.Match(
                 ArtifactInventory,
@@ -1232,7 +1199,6 @@ public sealed partial class RemediationSession
                 pageState,
                 (_program ?? throw new InvalidOperationException("No compiled remediation program is selected."))
                     .Program.TextNormalization);
-            ApplyLeftoverPolicyAfterValidation(pageState);
             if (pageState.IsDirty)
             {
                 var contents = ContentModelWriter<double>.CreateContent(
@@ -1341,7 +1307,6 @@ public sealed partial class RemediationSession
         IReadOnlyList<string> warnings,
         IReadOnlyList<RemediationBindingEvaluationSummary> bindingEvaluations,
         IReadOnlyList<RemediationOrderComparison> orderComparisons,
-        IReadOnlyList<RemediationAutoArtifactOutcome>? autoArtifacts = null,
         IReadOnlyList<RemediationAssertionOutcome>? assertions = null,
         RemediationSemanticTree? semanticTree = null,
         IReadOnlyList<RemediationUnaccountedContent>? unaccountedContent = null,
@@ -1376,13 +1341,10 @@ public sealed partial class RemediationSession
             skippedClaims,
             diagnostics: null,
             _suppressions,
-            ruleEvaluations: Array.Empty<RuleEvaluationSummary>(),
-            autoArtifacts,
             _predicateTraces?.ToList(),
             assertions,
             semanticTree,
             unaccountedContent,
-            annotationInventory: Array.Empty<RemediationAnnotationInventoryItem>(),
             warnings: null,
             templateDifferences,
             assembly,

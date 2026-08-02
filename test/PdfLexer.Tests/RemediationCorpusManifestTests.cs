@@ -121,14 +121,17 @@ public sealed class RemediationCorpusManifestTests
             var compiledStatement = RemediationProgramCompiler.Compile(statement);
             Assert.True(compiledStatement.IsValid, string.Join(Environment.NewLine, compiledStatement.Errors));
             Assert.Contains(SlotRef.Absolute("/bill-to-address/line"), compiledStatement.Slots.Keys);
+            Assert.Contains(SlotRef.Absolute("/ship-to-address/line"), compiledStatement.Slots.Keys);
 
             using (var source = CreateInput(statementCase.InputFactory))
             using (var document = PdfDocument.Open(source.Save()))
             using (var session = document.BeginRemediation(Configuration(profile)).Use(compiledStatement))
             {
                 var report = session.DryRun();
-                var anchored = Assert.Single(report.BindingEvaluations, x => x.BindingId == "ship-to-value");
-                Assert.Equal(1, anchored.AppliedClaims);
+                var billToClaims = report.Claims.Where(x => x.ProgramSlot?.Path == "/bill-to-address/line").ToList();
+                var shipToClaims = report.Claims.Where(x => x.ProgramSlot?.Path == "/ship-to-address/line").ToList();
+                Assert.Equal(3, billToClaims.Count);
+                Assert.Equal(1, shipToClaims.Count);
                 Assert.DoesNotContain(report.RuntimeDiagnostics, x => x.IsBlocking);
             }
 
@@ -205,7 +208,7 @@ public sealed class RemediationCorpusManifestTests
         StrictConformance = true
     };
 
-    private static PdfDocument CreateInput(string id) => id switch
+    internal static PdfDocument CreateInput(string id) => id switch
     {
         "invoice" => RemediationFixtureGenerator.CreateInvoiceInput(),
         "strict-invoice" => RemediationFixtureGenerator.CreateStrictInvoiceInput(),

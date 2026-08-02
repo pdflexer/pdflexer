@@ -367,7 +367,7 @@ public sealed record BindingRule
         RemediationPredicate? predicate = null,
         PageSelector? pages = null,
         double? minConfidence = null,
-        RuleCardinality? cardinality = null)
+        BindingCardinality? cardinality = null)
     {
         if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Binding id is required.", nameof(id));
         if (minConfidence is < 0 or > 1) throw new ArgumentOutOfRangeException(nameof(minConfidence));
@@ -386,7 +386,7 @@ public sealed record BindingRule
     public RemediationPredicate Predicate { get; }
     public PageSelector Pages { get; }
     public double? MinConfidence { get; }
-    public RuleCardinality? Cardinality { get; }
+    public BindingCardinality? Cardinality { get; }
 }
 
 /// <summary>References a singular template slot as a positional anchor.</summary>
