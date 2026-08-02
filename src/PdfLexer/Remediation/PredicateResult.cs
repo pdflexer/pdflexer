@@ -140,6 +140,8 @@ public sealed class RemediationEvaluationContext
 
     internal Action<RemediationRuntimeDiagnostic>? RuntimeDiagnosticSink { get; init; }
     internal string? ProgramDiagnosticScope { get; init; }
+    internal string? ProgramBindingId { get; init; }
+    internal SlotRef? ProgramSlot { get; init; }
 
     internal RemediationCandidate? CurrentCandidate { get; init; }
 
@@ -159,6 +161,13 @@ public sealed class RemediationEvaluationContext
         {
             CurrentCandidate = candidate,
             OccurrencePartitions = partitions
+        };
+
+    internal RemediationEvaluationContext WithProgramBinding(string bindingId, SlotRef? slot) =>
+        new(this, TextNormalization, TracePredicates)
+        {
+            ProgramBindingId = bindingId,
+            ProgramSlot = slot
         };
 
     private RemediationEvaluationContext(
@@ -189,6 +198,8 @@ public sealed class RemediationEvaluationContext
         OccurrencePartitions = source.OccurrencePartitions;
         RuntimeDiagnosticSink = source.RuntimeDiagnosticSink;
         ProgramDiagnosticScope = source.ProgramDiagnosticScope;
+        ProgramBindingId = source.ProgramBindingId;
+        ProgramSlot = source.ProgramSlot;
         // Anchor resolution is context-sensitive for program occurrence selectors.
         // A copied context must not reuse a resolver bound to the source candidate.
         _anchorResolver = new Lazy<AnchorResolver>(() => new AnchorResolver(this, Diagnostics));

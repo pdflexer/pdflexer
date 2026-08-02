@@ -50,21 +50,6 @@ public sealed partial class RemediationSession : IDisposable
     /// <summary>Structure builder owned by the remediation session.</summary>
     public StructuralBuilder Structure { get; }
 
-    /// <summary>Adds rule sets to the session in deterministic composition order.</summary>
-    public RemediationSession Use(params RuleSet[] ruleSets)
-    {
-        ThrowIfDisposed();
-        if (_program != null)
-            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rule sets.");
-        if (ruleSets == null)
-        {
-            throw new ArgumentNullException(nameof(ruleSets));
-        }
-
-        _ruleSets.AddRange(ruleSets.Where(x => x != null));
-        return this;
-    }
-
     /// <summary>
     /// Adds the prescriptive program selected for this document. The program is compiled before it
     /// is selected as the session's native execution plan; only one program may be selected.
@@ -81,7 +66,7 @@ public sealed partial class RemediationSession : IDisposable
     {
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(program);
-        if (_ruleSets.Count > 0 || _program != null)
+        if (_program != null)
             throw new InvalidOperationException("A remediation session accepts exactly one prescriptive program.");
         if (!program.IsValid)
             throw new ArgumentException(string.Join(Environment.NewLine, program.Errors), nameof(program));
@@ -95,8 +80,6 @@ public sealed partial class RemediationSession : IDisposable
     {
         ThrowIfDisposed();
         ArgumentNullException.ThrowIfNull(program);
-        if (_ruleSets.Count > 0)
-            return new ValidationReport(new[] { "A remediation session accepts exactly one prescriptive program." });
         var compiled = RemediationProgramCompiler.Compile(program);
         return new ValidationReport(compiled.Errors);
     }
@@ -109,59 +92,13 @@ public sealed partial class RemediationSession : IDisposable
         return this;
     }
 
-    /// <summary>Validates rules without parsing pages.</summary>
-    public ValidationReport Validate(params Rule[] rules) => Validate((IEnumerable<Rule>)rules);
-
-    /// <summary>Validates rules without parsing pages.</summary>
-    public ValidationReport Validate(IEnumerable<Rule> rules)
-    {
-        ThrowIfDisposed();
-        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
-        if (_program != null && additions.Count > 0)
-            return new ValidationReport(new[] { "A prescriptive program cannot be mixed with legacy rules." });
-        var composedRuleSets = _ruleSets.ToList();
-        return ValidateRules(
-            ComposeRules(additions),
-            BuildAnchorLookup(composedRuleSets),
-            BuildTolerancedZoneLookup(composedRuleSets),
-            BuildFlowRegionLookup(composedRuleSets),
-            ValidateRuleSetDeclarations(composedRuleSets));
-    }
-
-    /// <summary>Validates rule sets without parsing pages.</summary>
-    public ValidationReport Validate(params RuleSet[] ruleSets)
-    {
-        ThrowIfDisposed();
-        if (ruleSets == null)
-        {
-            throw new ArgumentNullException(nameof(ruleSets));
-        }
-        if (_program != null && ruleSets.Length > 0)
-            return new ValidationReport(new[] { "A prescriptive program cannot be mixed with legacy rule sets." });
-
-        var composedRuleSets = _ruleSets.Concat(ruleSets).ToList();
-        return ValidateRules(
-            composedRuleSets.SelectMany(x => x.Rules).ToList(),
-            BuildAnchorLookup(composedRuleSets),
-            BuildTolerancedZoneLookup(composedRuleSets),
-            BuildFlowRegionLookup(composedRuleSets),
-            ValidateRuleSetDeclarations(composedRuleSets));
-    }
-
-    /// <summary>Evaluates configured rule sets without mutating the document.</summary>
+    /// <summary>Evaluates the selected program without mutating the document.</summary>
     public RemediationReport DryRun()
     {
         ThrowIfDisposed();
-        if (_program != null)
-        {
-            return EvaluateProgram(apply: false);
-        }
-        if (_ruleSets.Count > 0)
-        {
-            return Evaluate(ComposeRules(Array.Empty<Rule>()), apply: false);
-        }
-
-        return new RemediationReport(committed: false, appliedAccessibilitySetup: false);
+        if (_program == null)
+            throw new InvalidOperationException("Select a remediation program before evaluating the session.");
+        return EvaluateProgram(apply: false);
     }
 
     /// <summary>Evaluates configured rule sets and retains selected predicate rejection traces.</summary>
@@ -173,11 +110,9 @@ public sealed partial class RemediationSession : IDisposable
         _predicateTraces = new List<RemediationPredicateTrace>();
         try
         {
-            if (_program != null)
-            {
-                return EvaluateProgram(apply: false);
-            }
-            return Evaluate(ComposeRules(Array.Empty<Rule>()), apply: false);
+            if (_program == null)
+                throw new InvalidOperationException("Select a remediation program before evaluating the session.");
+            return EvaluateProgram(apply: false);
         }
         finally
         {
@@ -186,24 +121,7 @@ public sealed partial class RemediationSession : IDisposable
         }
     }
 
-    /// <summary>Evaluates additional rules without mutating the document.</summary>
-    public RemediationReport DryRun(params Rule[] rules) => DryRun((IEnumerable<Rule>)rules);
-
-    /// <summary>Evaluates additional rules without mutating the document.</summary>
-    public RemediationReport DryRun(IEnumerable<Rule> rules)
-    {
-        ThrowIfDisposed();
-        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
-        if (_program != null && additions.Count > 0)
-            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rules.");
-        if (_program != null)
-        {
-            return EvaluateProgram(apply: false);
-        }
-        return Evaluate(ComposeRules(additions), apply: false);
-    }
-
-    /// <summary>Applies configured rule sets, accessibility setup, and diagnostics to the document.</summary>
+    /// <summary>Applies the selected program and accessibility setup to the document.</summary>
     public RemediationReport Commit()
     {
         ThrowIfDisposed();
@@ -216,103 +134,9 @@ public sealed partial class RemediationSession : IDisposable
             throw new InvalidOperationException("Authoring remediation sessions are dry-run only and cannot commit.");
         }
 
-        if (_program != null)
-        {
-            return CommitProgram();
-        }
-
-        if (_ruleSets.Count > 0)
-        {
-            return Commit(Array.Empty<Rule>());
-        }
-
-        CommitDocumentChanges(() =>
-        {
-            foreach (var (page, structParentsIndex) in _pageStructParents)
-            {
-                page.StructParents = new PdfIntNumber(structParentsIndex);
-            }
-
-            _document.Structure = Structure;
-            _document.ApplyAccessibilitySetup(
-                Configuration.Language,
-                Configuration.Title,
-                _effectiveProfile,
-                Configuration.StrictConformance);
-            _document.ValidateAccessibilityAuthoringSnapshot();
-        });
-
-        _committed = true;
-        Dispose();
-        return new RemediationReport(committed: true, appliedAccessibilitySetup: true);
-    }
-
-    /// <summary>Applies additional rules, accessibility setup, and diagnostics to the document.</summary>
-    public RemediationReport Commit(params Rule[] rules) => Commit((IEnumerable<Rule>)rules);
-
-    /// <summary>Applies additional rules, accessibility setup, and diagnostics to the document.</summary>
-    public RemediationReport Commit(IEnumerable<Rule> rules)
-    {
-        ThrowIfDisposed();
-        if (_committed)
-        {
-            throw new InvalidOperationException("Remediation session has already been committed.");
-        }
-        if (Configuration.RunMode == RemediationRunMode.Authoring)
-        {
-            throw new InvalidOperationException("Authoring remediation sessions are dry-run only and cannot commit.");
-        }
-        var additions = (rules ?? throw new ArgumentNullException(nameof(rules))).ToList();
-        if (_program != null && additions.Count > 0)
-            throw new InvalidOperationException("A prescriptive program cannot be mixed with legacy rules.");
-        if (_program != null)
-        {
-            return CommitProgram();
-        }
-
-        RemediationReport report = null!;
-        CommitDocumentChanges(() =>
-        {
-            report = Evaluate(ComposeRules(additions), apply: true);
-            var unsuppressed = report.Diagnostics.Where(d => !d.StartsWith("[SUPPRESSED]")).ToList();
-            if (unsuppressed.Count > 0)
-            {
-                throw new InvalidOperationException(string.Join(Environment.NewLine, unsuppressed));
-            }
-
-            foreach (var (page, structParentsIndex) in _pageStructParents)
-            {
-                page.StructParents = new PdfIntNumber(structParentsIndex);
-            }
-
-            _document.Structure = Structure;
-            _document.ApplyAccessibilitySetup(
-                Configuration.Language,
-                Configuration.Title,
-                _effectiveProfile,
-                Configuration.StrictConformance);
-            _document.ValidateAccessibilityAuthoringSnapshot();
-        });
-
-        _committed = true;
-        Dispose();
-        return new RemediationReport(
-            committed: true,
-            appliedAccessibilitySetup: true,
-            report.Claims,
-            report.SkippedClaims,
-            report.Diagnostics,
-            _suppressions,
-            report.RuleEvaluations,
-            report.AutoArtifacts.Select(x => x with { Disposition = RemediationAutoArtifactDisposition.Applied }).ToList(),
-            report.PredicateTraces,
-            report.AssertionOutcomes,
-            report.PlannedSemanticTree,
-            report.UnaccountedContent,
-            report.AnnotationInventory,
-            report.Warnings,
-            report.TemplateDifferences,
-            report.TemplateAssembly);
+        if (_program == null)
+            throw new InvalidOperationException("Select a remediation program before committing the session.");
+        return CommitProgram();
     }
 
     private IReadOnlyList<Rule> ComposeRules(IEnumerable<Rule> rules)
@@ -2367,6 +2191,14 @@ public sealed partial class RemediationSession : IDisposable
                 return ownedTargets.GetUnowned(source).Select(span => (Item: item, Span: span));
             })
             .ToList();
+        // Program ownership is character-exact, so word bindings can leave only operator
+        // whitespace behind. Normalization-empty spans are not rendered semantic content.
+        if (normalization != null)
+        {
+            leftovers = leftovers
+                .Where(x => !string.IsNullOrWhiteSpace(textNormalization.Normalize(GetText(x.Item, x.Span))))
+                .ToList();
+        }
         var graphicalLeftovers = EnumerateItems(pageState.WorkingContent)
             .Where(IsPaintingItem)
             .Where(x => x is not TextContent<double>)
@@ -2515,6 +2347,14 @@ public sealed partial class RemediationSession : IDisposable
             {
                 ApplyClassifyClaim(pageState, claim, diagnostics);
             }
+        }
+
+        static string GetText(TextContent<double> item, SourceTextSpan span)
+        {
+            var localStart = span.StartCharacterIndex - item.SourceCharacterOffset;
+            return localStart >= 0 && localStart + span.CharacterCount <= item.Text.Length
+                ? item.Text.Substring(localStart, span.CharacterCount)
+                : item.Text;
         }
     }
 
@@ -5355,7 +5195,15 @@ public sealed partial class RemediationSession : IDisposable
         }
     }
 
-    private void ReportDiagnostic(DiagnosticCode code, string scope, string message, List<string> diagnostics)
+    private void ReportDiagnostic(
+        DiagnosticCode code,
+        string scope,
+        string message,
+        List<string> diagnostics,
+        SlotRef? programSlot = null,
+        string? bindingId = null,
+        IReadOnlyList<string>? candidateIds = null,
+        IReadOnlyDictionary<string, object?>? evidence = null)
     {
         var strict = Configuration.DiagnosticStrictness == RemediationDiagnosticStrictness.Strict;
         var suppression = NonSuppressibleDiagnosticCodes.Contains(code)
@@ -5371,6 +5219,10 @@ public sealed partial class RemediationSession : IDisposable
                     RemediationDiagnosticDisposition.Acknowledged,
                     scope,
                     message,
+                    programSlot,
+                    bindingId,
+                    candidateIds,
+                    evidence,
                     Suppression: suppression));
                 diagnostics.Add($"[SUPPRESSED] {code}: {message} (Reason: {suppression.Reason})");
                 return;
@@ -5383,6 +5235,10 @@ public sealed partial class RemediationSession : IDisposable
                     : RemediationDiagnosticDisposition.Error,
                 scope,
                 message,
+                programSlot,
+                bindingId,
+                candidateIds,
+                evidence,
                 Suppression: suppression));
 
             if (suppression != null && strict)

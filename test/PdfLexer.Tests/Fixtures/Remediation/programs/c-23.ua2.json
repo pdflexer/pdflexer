@@ -1,0 +1,42 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "c-23",
+  "template": { "id": "c-23", "version": "1", "profile": "PdfUa2", "document": {
+    "tag": "Document", "children": [
+      { "tag": "P", "name": "invoice-row", "children": [] },
+      { "tag": "P", "name": "combined-invoice", "children": [] },
+      { "tag": "P", "name": "due-label", "children": [] },
+      { "tag": "P", "name": "due-value", "children": [] },
+      { "tag": "P", "name": "po-label", "children": [] },
+      { "tag": "P", "name": "status", "children": [] },
+      { "tag": "P", "name": "po-value", "children": [] },
+      { "tag": "P", "name": "notes-label", "children": [] },
+      { "tag": "H1", "name": "next-heading", "children": [] },
+      { "tag": "P", "name": "total-label", "children": [] },
+      { "tag": "P", "name": "total-value", "children": [] }
+    ]
+  } },
+  "bindings": [
+    { "id": "invoice-row", "target": { "slot": "/invoice-row" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "and", "predicates": [ { "kind": "textContains", "text": "Invoice #" }, { "kind": "textContains", "text": "INV-10042" }, { "kind": "not", "predicate": { "kind": "textContains", "text": "Invoice #:" } } ] } },
+    { "id": "combined-invoice", "target": { "slot": "/combined-invoice" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Invoice #: INV-10042" } },
+    { "id": "due-label", "target": { "slot": "/due-label" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Due Date" } },
+    { "id": "due-value", "target": { "slot": "/due-value" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "and", "predicates": [ { "kind": "textEquals", "text": "2026-01-15" }, { "kind": "anchorRelative", "relation": "Below", "id": "due-label", "maxDistance": 30 } ] } },
+    { "id": "po-label", "target": { "slot": "/po-label" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "PO Number" } },
+    { "id": "status", "target": { "slot": "/status" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Status: Active" } },
+    { "id": "po-value", "target": { "slot": "/po-value" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "and", "predicates": [ { "kind": "textEquals", "text": "PO-9988" }, { "kind": "anchorRelative", "relation": "SameRowAs", "id": "po-label" } ] } },
+    { "id": "notes-label", "target": { "slot": "/notes-label" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Notes:" } },
+    { "id": "next-heading", "target": { "slot": "/next-heading" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Next Section Header" } },
+    { "id": "total-label", "target": { "slot": "/total-label" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Total Amount" } },
+    { "id": "total-value", "target": { "slot": "/total-value" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "and", "predicates": [ { "kind": "textEquals", "text": "$150.00" }, { "kind": "anchorRelative", "relation": "SameRowAs", "id": "total-label" } ] } },
+    { "id": "footer", "target": { "artifact": "footer" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textStartsWith", "text": "Page " } }
+  ],
+  "anchors": [
+    { "id": "due-label", "slot": "/due-label" },
+    { "id": "po-label", "slot": "/po-label" },
+    { "id": "total-label", "slot": "/total-label" }
+  ],
+  "artifacts": [
+    { "id": "footer", "type": "Pagination", "semanticSubtype": "Footer", "includeBoundingBox": true, "attached": [ "Bottom" ], "minCount": 1, "maxCount": 1 }
+  ],
+  "assertions": [], "boundaries": [], "fragments": []
+}

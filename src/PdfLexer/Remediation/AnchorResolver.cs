@@ -302,8 +302,30 @@ internal sealed class AnchorResolver
                 _context.ProgramDiagnosticScope ?? $"Anchor:{anchor.Id}",
                 message,
                 anchor.Slot,
+                _context.ProgramBindingId,
                 CandidateIds: claims?.SelectMany(x => x.Candidates)
                     .Select(x => x.CandidateId).Distinct().ToArray()));
+            return;
+        }
+        _diagnostics.Add(message);
+    }
+
+    private void EmitFailure(
+        DiagnosticCode code,
+        RemediationAnchor anchor,
+        string message,
+        IReadOnlyList<AnchorCandidateMatch>? matches = null)
+    {
+        if (_context.RuntimeDiagnosticSink != null)
+        {
+            _context.RuntimeDiagnosticSink(new RemediationRuntimeDiagnostic(
+                code,
+                RemediationDiagnosticDisposition.Error,
+                _context.ProgramDiagnosticScope ?? $"Anchor:{anchor.Id}",
+                message,
+                _context.ProgramSlot,
+                _context.ProgramBindingId,
+                matches?.Select(x => x.Candidate.CandidateId).Distinct().ToArray()));
             return;
         }
         _diagnostics.Add(message);
@@ -386,7 +408,9 @@ internal sealed class AnchorResolver
         {
             if (selection.Mode != AnchorSelectionMode.OptionalSingle)
             {
-                _diagnostics.Add(
+                EmitFailure(
+                    DiagnosticCode.ProgramAnchorUnresolved,
+                    anchor,
                     $"Anchor '{anchor.Id}' matched no candidates on page {_context.PageIndex + 1} for {description}.");
             }
             return null;
@@ -430,9 +454,13 @@ internal sealed class AnchorResolver
             return matches[0];
         }
 
-        _diagnostics.Add(required
-            ? $"Anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}."
-            : $"Optional anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}.");
+        EmitFailure(
+            DiagnosticCode.ProgramAnchorAmbiguous,
+            anchor,
+            required
+                ? $"Anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}."
+                : $"Optional anchor '{anchor.Id}' is ambiguous on page {_context.PageIndex + 1}. Found {matches.Count} matches for {description}.",
+            matches);
         return null;
     }
 

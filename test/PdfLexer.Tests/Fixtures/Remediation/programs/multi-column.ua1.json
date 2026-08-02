@@ -1,0 +1,162 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "multi-column",
+  "template": {
+    "id": "multi-column",
+    "version": "1",
+    "profile": "PdfUa1",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "H1",
+          "name": "title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "sidebar-heading",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "main-heading",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "sidebar-body",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "main-body-1",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "main-body-2",
+          "children": []
+        }
+      ],
+      "orderPolicy": "AllowDeclaredReorder"
+    }
+  },
+  "bindings": [
+    {
+      "id": "title",
+      "target": {
+        "slot": "/title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Policy Update"
+      }
+    },
+    {
+      "id": "sidebar-heading",
+      "target": {
+        "slot": "/sidebar-heading"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Sidebar"
+      }
+    },
+    {
+      "id": "main-heading",
+      "target": {
+        "slot": "/main-heading"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Main Column"
+      }
+    },
+    {
+      "id": "sidebar-body",
+      "target": {
+        "slot": "/sidebar-body"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Important dates"
+      }
+    },
+    {
+      "id": "main-body-1",
+      "target": {
+        "slot": "/main-body-1"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "The updated policy applies next quarter."
+      }
+    },
+    {
+      "id": "main-body-2",
+      "target": {
+        "slot": "/main-body-2"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Review the summary before filing."
+      }
+    },
+    {
+      "id": "page-footer",
+      "target": {
+        "artifact": "page-footer"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textStartsWith",
+        "text": "Page "
+      }
+    }
+  ],
+  "anchors": [],
+  "artifacts": [
+    {
+      "id": "page-footer",
+      "type": "Pagination",
+      "semanticSubtype": "Footer",
+      "includeBoundingBox": true,
+      "attached": [
+        "Bottom"
+      ],
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": []
+}

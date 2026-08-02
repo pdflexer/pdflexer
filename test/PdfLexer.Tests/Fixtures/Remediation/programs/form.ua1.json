@@ -1,0 +1,161 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "form",
+  "template": {
+    "id": "form",
+    "version": "1",
+    "profile": "PdfUa1",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "H1",
+          "name": "title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "full-name-label",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "full-name-value",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "email-label",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "email-value",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "agreement",
+          "children": []
+        }
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "title",
+      "target": {
+        "slot": "/title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Registration Form"
+      }
+    },
+    {
+      "id": "full-name-label",
+      "target": {
+        "slot": "/full-name-label"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Full name"
+      }
+    },
+    {
+      "id": "full-name-value",
+      "target": {
+        "slot": "/full-name-value"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Ada Lovelace"
+      }
+    },
+    {
+      "id": "email-label",
+      "target": {
+        "slot": "/email-label"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Email"
+      }
+    },
+    {
+      "id": "email-value",
+      "target": {
+        "slot": "/email-value"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "ada@example.com"
+      }
+    },
+    {
+      "id": "agreement",
+      "target": {
+        "slot": "/agreement"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "I agree to receive notices."
+      }
+    },
+    {
+      "id": "page-footer",
+      "target": {
+        "artifact": "page-footer"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textStartsWith",
+        "text": "Page "
+      }
+    }
+  ],
+  "anchors": [],
+  "artifacts": [
+    {
+      "id": "page-footer",
+      "type": "Pagination",
+      "semanticSubtype": "Footer",
+      "includeBoundingBox": true,
+      "attached": [
+        "Bottom"
+      ],
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": []
+}

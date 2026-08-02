@@ -1,0 +1,43 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "c-30",
+  "template": {
+    "id": "c-30",
+    "version": "1",
+    "profile": "PdfUa2",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "Sect",
+          "name": "section",
+          "occurrence": "OneOrMore",
+          "startsOn": { "kind": "boundary", "boundary": "section-start" },
+          "children": [
+            { "tag": "P", "name": "line", "children": [] }
+          ]
+        }
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "section-line",
+      "target": { "slot": "/section/line" },
+      "candidates": { "kind": "text", "granularity": "Line" },
+      "predicate": { "kind": "textStartsWith", "text": "Template section " },
+      "cardinality": { "minMatches": 2, "maxMatches": 2 }
+    }
+  ],
+  "anchors": [],
+  "artifacts": [],
+  "assertions": [],
+  "boundaries": [
+    {
+      "id": "section-start",
+      "candidates": { "kind": "text", "granularity": "Line" },
+      "predicate": { "kind": "textStartsWith", "text": "Template section " }
+    }
+  ],
+  "fragments": []
+}

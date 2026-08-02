@@ -1,0 +1,135 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "mixed-page-sizes",
+  "template": {
+    "id": "mixed-page-sizes",
+    "version": "1",
+    "profile": "PdfUa1",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "H1",
+          "name": "letter-title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "letter-body",
+          "children": []
+        },
+        {
+          "tag": "H1",
+          "name": "a4-title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "a4-body",
+          "children": []
+        }
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "letter-title",
+      "target": {
+        "slot": "/letter-title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Mixed Size Notice"
+      },
+      "pages": {
+        "kind": "first"
+      }
+    },
+    {
+      "id": "letter-body",
+      "target": {
+        "slot": "/letter-body"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Letter page content"
+      },
+      "pages": {
+        "kind": "first"
+      }
+    },
+    {
+      "id": "a4-title",
+      "target": {
+        "slot": "/a4-title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Continuation"
+      },
+      "pages": {
+        "kind": "last"
+      }
+    },
+    {
+      "id": "a4-body",
+      "target": {
+        "slot": "/a4-body"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "A4 page content"
+      },
+      "pages": {
+        "kind": "last"
+      }
+    },
+    {
+      "id": "page-footer",
+      "target": {
+        "artifact": "page-footer"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textStartsWith",
+        "text": "Page "
+      }
+    }
+  ],
+  "anchors": [],
+  "artifacts": [
+    {
+      "id": "page-footer",
+      "type": "Pagination",
+      "semanticSubtype": "Footer",
+      "includeBoundingBox": true,
+      "attached": [
+        "Bottom"
+      ],
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": []
+}

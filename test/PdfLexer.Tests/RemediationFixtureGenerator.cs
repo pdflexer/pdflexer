@@ -14,468 +14,10 @@ namespace PdfLexer.Tests;
 
 internal static class RemediationFixtureGenerator
 {
-    private static readonly object GenerateLock = new();
-    private static readonly RemediationFixtureBlueprint[] Blueprints =
-    {
-        new("Invoice", "invoice-like", CreateInvoiceInput, CreateInvoiceRuleSet),
-        new("Statement", "statement-like", CreateStatementInput, CreateStatementRuleSet),
-        new("Report", "report-like", CreateReportInput, CreateReportRuleSet),
-        new("Form", "form-like", CreateFormInput, CreateFormRuleSet),
-        new("Multi-column", "multi-column-sidebar", CreateMultiColumnInput, CreateMultiColumnRuleSet),
-        new("Mixed page sizes", "mixed-page-sizes", CreateMixedPageSizeInput, CreateMixedPageSizeRuleSet),
-        new("C-01 Unicode and normalization", "c-01-unicode-normalization", CreateC01Input, CreateC01RuleSet),
-        new("C-02 Operator fragmentation", "c-02-operator-fragmentation", CreateC02Input, CreateC02RuleSet),
-        new("C-03 Graphical content", "c-03-graphical-content", CreateC03Input, CreateC03RuleSet),
-        new("C-08 Existing annotations", "c-08-existing-annotations", CreateC08Input, CreateC08RuleSet),
-        new("C-10 Running furniture", "c-10-running-furniture", CreateC10Input, CreateC10RuleSet),
-        new("C-12 Multi-page continuous table", "c-12-continued-table", CreateC12Input, CreateC12RuleSet),
-        new("C-23 Label value pairs", "c-23-label-value-pairs", CreateC23Input, CreateC23RuleSet),
-        new("C-29-a Nested list composition", "c-29-a-nested-list", CreateC29aInput, CreateC29aRuleSet),
-        new("C-29-b Nested section composition", "c-29-b-nested-sections", CreateC29bInput, CreateC29bRuleSet),
-        new("C-30 Prescriptive repeated sections", "c-30-prescriptive-repeated-sections", CreateC30Input, CreateC30RuleSet),
-        new(
-            "C-04-a Leftover accounting (Flag)",
-            "c-04-a-flag",
-            CreateC04Input,
-            CreateC04RuleSetWithoutInventory,
-            FixtureOutcome.DiagnosesOnly,
-            RemediationLeftoverPolicy.Flag),
-        new(
-            "C-04-b Leftover accounting (FailFast)",
-            "c-04-b-failfast",
-            CreateC04Input,
-            CreateC04RuleSetWithoutInventory,
-            FixtureOutcome.DiagnosesOnly,
-            RemediationLeftoverPolicy.FailFast),
-        new(
-            "C-04-c Leftover accounting (AutoArtifact)",
-            "c-04-c-autoartifact",
-            CreateC04Input,
-            CreateC04RuleSetWithoutInventory),
-        new(
-            "C-04-d Leftover accounting (inventory)",
-            "c-04-d-inventory",
-            CreateC04Input,
-            CreateC04RuleSet,
-            FixtureOutcome.DiagnosesOnly),
-        new(
-            "C-05 Semantic assertion",
-            "c-05-semantic-assertion",
-            CreateC05Input,
-            CreateC05RuleSet,
-            FixtureOutcome.CommitsWithFailedAssertions),
-        new("C-06-a Template drift baseline", "c-06-a-template-drift", CreateC06aInput, CreateC06aRuleSet),
-        new(
-            "C-06-b Template drift variant",
-            "c-06-b-template-drift",
-            CreateC06bInput,
-            CreateC06aRuleSet,
-            FixtureOutcome.DiagnosesOnly),
-        new(
-            "C-24 Ambiguous and repeated anchors",
-            "c-24-ambiguous-anchors",
-            CreateC24Input,
-            CreateC24RuleSet,
-            FixtureOutcome.DiagnosesOnly)
-    };
-
-    public static string FixtureRootPath
-    {
-        get
-        {
-            var tp = PathUtil.GetPathFromSegmentOfCurrent("test");
-            return Path.Combine(tp, "results", "accessibility-fixtures", "remediation");
-        }
-    }
-
-    public static string InputRootPath => Path.Combine(FixtureRootPath, "input");
-
-    public static string GetFixtureFileName(string baseName, PdfUaProfile profile) =>
-        $"{baseName}-{(profile == PdfUaProfile.PdfUa1 ? "ua1" : "ua2")}.pdf";
-
-    private static IReadOnlyList<GeneratedRemediationFixture>? _cached;
-
-    /// <summary>
-    /// Generates the corpus once per process. Every fixture assertion in the suite calls this, so
-    /// regenerating on each call rewrote the whole corpus dozens of times per run.
-    /// </summary>
-    public static IReadOnlyList<GeneratedRemediationFixture> GenerateAll()
-    {
-        lock (GenerateLock)
-        {
-            return _cached ??= GenerateAllCore();
-        }
-    }
-
-    /// <summary>Regenerates unconditionally. Used to prove byte-identical regeneration.</summary>
-    public static IReadOnlyList<GeneratedRemediationFixture> GenerateAllUncached()
-    {
-        lock (GenerateLock)
-        {
-            return GenerateAllCore();
-        }
-    }
-
-    private static IReadOnlyList<GeneratedRemediationFixture> GenerateAllCore()
-    {
-        Directory.CreateDirectory(FixtureRootPath);
-        Directory.CreateDirectory(InputRootPath);
-        var results = new List<GeneratedRemediationFixture>(Blueprints.Length * 2);
-        foreach (var blueprint in Blueprints)
-        {
-            var input = SaveInput(blueprint);
-            results.Add(SaveFixture(blueprint, input, PdfUaProfile.PdfUa1));
-            results.Add(SaveFixture(blueprint, input, PdfUaProfile.PdfUa2));
-        }
-
-        return results;
-    }
-
-    public static GeneratedRemediationFixture GenerateStrictInvoiceUa1()
-    {
-        lock (GenerateLock)
-        {
-            Directory.CreateDirectory(FixtureRootPath);
-            Directory.CreateDirectory(InputRootPath);
-            var blueprint = new RemediationFixtureBlueprint(
-                "Strict invoice table",
-                "invoice-table-strict",
-                CreateStrictInvoiceInput,
-                CreateInvoiceRuleSet);
-            var input = SaveInput(blueprint);
-            return SaveFixture(blueprint, input, PdfUaProfile.PdfUa1);
-        }
-    }
-
-    private static GeneratedRemediationInput SaveInput(RemediationFixtureBlueprint blueprint)
-    {
-        using var document = blueprint.CreateInput();
-        var fileName = $"{blueprint.BaseName}-input.pdf";
-        var path = Path.Combine(InputRootPath, fileName);
-        var bytes = document.Save();
-        File.WriteAllBytes(path, bytes);
-        return new GeneratedRemediationInput(fileName, path, bytes);
-    }
-
-    private static GeneratedRemediationFixture SaveFixture(
-        RemediationFixtureBlueprint blueprint,
-        GeneratedRemediationInput input,
-        PdfUaProfile profile)
-    {
-        using var document = PdfDocument.Open(input.Bytes);
-        var configuration = new RemediationSessionConfiguration
-        {
-            Language = "en-US",
-            Title = $"Remediated {blueprint.Name}",
-            Profile = profile,
-            StrictConformance = true,
-            DebugWrite = true,
-            LeftoverPolicy = blueprint.LeftoverPolicy ?? RemediationLeftoverPolicy.AutoArtifact,
-            // The failed assertion is the point of C-05, but it also blocks commit, and without
-            // committed bytes there is nothing to hand veraPDF. Suppressing it is what lets the fixture
-            // demonstrate its actual claim: a document that passes external validation while its
-            // semantics are wrong.
-            DiagnosticStrictness = blueprint.Outcome == FixtureOutcome.CommitsWithFailedAssertions
-                ? RemediationDiagnosticStrictness.Permissive
-                : RemediationDiagnosticStrictness.Strict
-        };
-        using var session = document.BeginRemediation(configuration).Use(blueprint.CreateRuleSet());
-        if (blueprint.Outcome == FixtureOutcome.CommitsWithFailedAssertions)
-        {
-            session.Suppress(
-                DiagnosticCode.SemanticAssertionFailed,
-                "*",
-                "C-05 ships the semantically wrong output on purpose so veraPDF can be run against it.");
-        }
-
-        var dryRun = session.DryRun();
-
-        // A diagnosing fixture exists to produce diagnostics, so it is captured from the dry run and
-        // never committed. Only its input is written; there is no remediated output to gate.
-        if (blueprint.Outcome == FixtureOutcome.DiagnosesOnly)
-        {
-            return new GeneratedRemediationFixture(
-                blueprint.Name,
-                GetFixtureFileName(blueprint.BaseName, profile),
-                null,
-                input.Path,
-                profile,
-                Array.Empty<byte>(),
-                dryRun,
-                blueprint.Outcome);
-        }
-
-        var unsuppressedDifferences = dryRun.TemplateDifferences.Where(x => !x.Suppressed).ToList();
-        if (unsuppressedDifferences.Count > 0)
-        {
-            var absorbed = string.Join(
-                Environment.NewLine,
-                dryRun.AutoArtifacts.Select(x =>
-                    $"auto-artifact page={x.PageIndex + 1} inventory={x.InventoryItemId ?? "<none>"} " +
-                    $"bounds={x.BoundingBox} text=\"{x.Text}\""));
-            throw new InvalidOperationException(
-                string.Join(Environment.NewLine, dryRun.Diagnostics) +
-                (absorbed.Length == 0 ? string.Empty : Environment.NewLine + absorbed));
-        }
-        RemediationReport report;
-        try
-        {
-            report = session.Commit();
-        }
-        catch (Exception ex)
-        {
-            throw new InvalidOperationException($"Fixture '{blueprint.BaseName}' failed to commit.", ex);
-        }
-
-        // C-05 commits a conformant document whose semantics are wrong on purpose; a failed assertion
-        // is the expected outcome there and a defect anywhere else.
-        var failedAssertions = report.AssertionOutcomes.Where(x => !x.Passed).ToList();
-        var expectFailures = blueprint.Outcome == FixtureOutcome.CommitsWithFailedAssertions;
-        if (failedAssertions.Count > 0 != expectFailures)
-        {
-            throw new InvalidOperationException(
-                $"Fixture '{blueprint.BaseName}' expected {(expectFailures ? "failed" : "no failed")} " +
-                $"assertions but observed {failedAssertions.Count}.");
-        }
-
-        var fileName = GetFixtureFileName(blueprint.BaseName, profile);
-        var path = Path.Combine(FixtureRootPath, fileName);
-        var bytes = document.Save();
-        File.WriteAllBytes(path, bytes);
-        return new GeneratedRemediationFixture(
-            blueprint.Name, fileName, path, input.Path, profile, bytes, report, blueprint.Outcome);
-    }
-
-    private static RuleSet CreateInvoiceRuleSet() =>
-        new(
-            "invoice-template",
-            new[]
-            {
-                FooterRule(),
-                new Rule(
-                    "invoice-title",
-                    RemediationActions.Tag("H1"),
-                    Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16),
-                    CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "invoice-number",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Contains("INV-10042"),
-                    CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "line-item-header-cell",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Anchor.SameRowAs("line-items-header", tolerance: 4),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule(
-                    "line-item-cell",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Flow.InFlowRegion("line-items"),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule(
-                    "line-items-table",
-                    RemediationActions.TableOverFlattenedCells(
-                        ClaimPredicates.FromRule("line-item-header-cell").Or(ClaimPredicates.FromRule("line-item-cell")),
-                        ClaimPredicates.FromRule("line-item-header-cell"),
-                        72, 250, 450, 600),
-                    stage: Stage.Group),
-                BodyParagraphRule()
-            },
-            new[]
-            {
-                RemediationAnchor.TextLabel("invoice-label", "Invoice #"),
-                RemediationAnchor.TextLabel("line-items-header", "Item"),
-                RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
-            },
-            tolerancedZones: InvoiceZones(),
-            flowRegions: new[]
-            {
-                new FlowRegion("line-items", FlowBoundary.Anchor("line-items-header"), FlowBoundary.Anchor("subtotal-label"))
-            },
-            structuralTemplate: InvoiceTemplate(),
-            artifacts: InvoiceArtifacts());
-
-    private static RuleSet CreateStatementRuleSet() =>
-        new(
-            "statement-template",
-            new[]
-            {
-                FooterRule(),
-                new Rule("statement-title", RemediationActions.Tag("H1"), Predicates.Text.StartsWith("Account Statement"), CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "bill-to-address",
-                    RemediationActions.Tag("P"),
-                    Predicates.Flow.InFlowRegion("bill-to-address"),
-                    CandidateSelector.Text(Granularity.Line)),
-                BodyParagraphRule()
-            },
-            new[]
-            {
-                RemediationAnchor.TextLabel("bill-to-label", "Bill To"),
-                RemediationAnchor.TextLabel("ship-to-label", "Ship To")
-            },
-            tolerancedZones: FooterZones(),
-            flowRegions: new[]
-            {
-                new FlowRegion("bill-to-address", FlowBoundary.Anchor("bill-to-label"), FlowBoundary.Anchor("ship-to-label"))
-            },
-            structuralTemplate: StatementTemplate(),
-            artifacts: FooterArtifacts());
-
-    private static RuleSet CreateReportRuleSet() =>
-        CreateGenericRuleSet("report-template", ReportTemplate());
-
-    private static RuleSet CreateFormRuleSet() =>
-        CreateGenericRuleSet("form-template", FormTemplate());
-
-    private static RuleSet CreateMultiColumnRuleSet() =>
-        CreateGenericRuleSet("multi-column-template", MultiColumnTemplate());
-
-    private static RuleSet CreateMixedPageSizeRuleSet() =>
-        CreateGenericRuleSet("mixed-page-sizes-template", MixedPageSizeTemplate());
-
-    private static RuleSet CreateGenericRuleSet(
-        string id,
-        RemediationStructuralTemplate structuralTemplate) =>
-        new(
-            id,
-            new[]
-            {
-                FooterRule(),
-                new Rule("title", RemediationActions.Tag("H1"), Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16), CandidateSelector.Text(Granularity.Line)),
-                BodyParagraphRule()
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            structuralTemplate: structuralTemplate,
-            artifacts: FooterArtifacts());
-
-    private static Rule FooterRule() =>
-        new("footer", RemediationActions.Artifact(ArtifactSubtype.Pagination), Predicates.Flow.InZone("footer"), CandidateSelector.Text(Granularity.Line));
-
-    private static Rule BodyParagraphRule() =>
-        new("body-line", RemediationActions.Tag("P"), RemediationPredicate.Always, CandidateSelector.Text(Granularity.Line));
-
-    private static TolerancedZone[] FooterZones() =>
-        new[] { new TolerancedZone("footer", LayoutCoord.MarginRelative(bottom: 42), Tolerance: 6) };
-
-    private static TolerancedZone[] InvoiceZones() =>
-        FooterZones()
-            .Append(new TolerancedZone(
-                "line-items-header-spacing",
-                LayoutCoord.Absolute(new PdfRect<double>(72, 670, 600, 700))))
-            .ToArray();
-
-    private static RemediationArtifactInventoryItem[] FooterArtifacts() =>
-        new[]
-        {
-            new RemediationArtifactInventoryItem(
-                "page-footer",
-                ArtifactSubtype.Pagination,
-                pages: PageSelector.Every,
-                zoneId: "footer",
-                occurrence: AssertionCount.Exactly(1))
-        };
-
-    private static RemediationArtifactInventoryItem[] InvoiceArtifacts() =>
-        FooterArtifacts()
-            .Append(new RemediationArtifactInventoryItem(
-                "line-items-header-spacing",
-                ArtifactSubtype.Layout,
-                pages: PageSelector.Every,
-                zoneId: "line-items-header-spacing",
-                occurrence: AssertionCount.Exactly(2)))
-            .ToArray();
-
-    private static RemediationStructuralTemplate InvoiceTemplate() =>
-        Template(
-            Node("H1", "invoice-title"),
-            Node("P", "invoice-number"),
-            Node(
-                "Table",
-                "line-items-table",
-                Node(
-                    "TR",
-                    "line-items-header-row",
-                    Node("TH", "item-header"),
-                    Node("TH", "quantity-header"),
-                    Node("TH", "amount-header")),
-                Node(
-                    "TR",
-                    "widget-row",
-                    Node("TD", "widget-item"),
-                    Node("TD", "widget-quantity"),
-                    Node("TD", "widget-amount")),
-                Node(
-                    "TR",
-                    "service-row",
-                    Node("TD", "service-item"),
-                    Node("TD", "service-quantity"),
-                    Node("TD", "service-amount"))),
-            Node("P", "invoice-summary"));
-
-    private static RemediationStructuralTemplate StatementTemplate() =>
-        Template(
-            Node("H1", "statement-title"),
-            Node("P", "bill-to-label"),
-            Node("P", "bill-to-name"),
-            Node("P", "bill-to-street"),
-            Node("P", "bill-to-city"),
-            Node("P", "ship-to-label"),
-            Node("P", "ship-to-value"));
-
-    private static RemediationStructuralTemplate ReportTemplate() =>
-        Template(
-            Node("H1", "report-title"),
-            Node("P", "overview-heading"),
-            Node("P", "overview-body"),
-            Node("P", "optional-notes-heading"),
-            Node("P", "optional-notes-body"));
-
-    private static RemediationStructuralTemplate FormTemplate() =>
-        Template(
-            Node("H1", "form-title"),
-            Node("P", "full-name-label"),
-            Node("P", "full-name-value"),
-            Node("P", "email-label"),
-            Node("P", "email-value"),
-            Node("P", "notices-agreement"));
-
-    private static RemediationStructuralTemplate MultiColumnTemplate() =>
-        Template(
-            Node("H1", "policy-title"),
-            Node("P", "sidebar-heading"),
-            Node("P", "main-column-heading"),
-            Node("P", "sidebar-body"),
-            Node("P", "main-column-body-1"),
-            Node("P", "main-column-body-2"));
-
-    private static RemediationStructuralTemplate MixedPageSizeTemplate() =>
-        Template(
-            Node("H1", "letter-title", pages: PageSelector.First),
-            Node("P", "letter-body", pages: PageSelector.First),
-            Node("H1", "a4-title", pages: PageSelector.Last),
-            Node("P", "a4-body", pages: PageSelector.Last));
-
-    private static RemediationStructuralTemplate Template(
-        params RemediationStructuralTemplateNode[] children) => new(children);
-
-    private static RemediationStructuralTemplateNode Node(
-        string tag,
-        string id,
-        params RemediationStructuralTemplateNode[] children) =>
-        new(tag, children, id);
-
-    private static RemediationStructuralTemplateNode Node(
-        string tag,
-        string id,
-        PageSelector pages) =>
-        new(tag, id: id, pages: pages);
-
-    private static PdfDocument CreateInvoiceInput() =>
+    internal static PdfDocument CreateInvoiceInput() =>
         CreateInvoiceInput(CreateEmbeddedFont());
 
-    private static PdfDocument CreateStrictInvoiceInput()
+    internal static PdfDocument CreateStrictInvoiceInput()
         => CreateInvoiceInput(CreateEmbeddedFont());
 
     private static PdfDocument CreateInvoiceInput(IWritableFont font)
@@ -504,7 +46,7 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    private static PdfDocument CreateStatementInput()
+    internal static PdfDocument CreateStatementInput()
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
@@ -521,7 +63,7 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    private static PdfDocument CreateReportInput()
+    internal static PdfDocument CreateReportInput()
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
@@ -536,7 +78,7 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    private static PdfDocument CreateFormInput()
+    internal static PdfDocument CreateFormInput()
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
@@ -552,7 +94,7 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    private static PdfDocument CreateMultiColumnInput()
+    internal static PdfDocument CreateMultiColumnInput()
     {
         var doc = PdfDocument.Create();
         var page = doc.AddPage(PageSize.LETTER);
@@ -568,7 +110,7 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    private static PdfDocument CreateMixedPageSizeInput()
+    internal static PdfDocument CreateMixedPageSizeInput()
     {
         var doc = PdfDocument.Create();
         var font = CreateEmbeddedFont();
@@ -615,8 +157,6 @@ internal static class RemediationFixtureGenerator
     {
         writer.Save().Font(font, size).TextMove(x, y).Text(text).Restore();
     }
-
-    #region Tier 0 Fixture Builders
 
     // C-01: Unicode and normalization
     internal static PdfDocument CreateC01Input()
@@ -688,46 +228,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC01RuleSet() =>
-        new(
-            "c-01-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c01-ligature", RemediationActions.Tag("P"), Predicates.Text.Contains("fi fl"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-softhyphen", RemediationActions.Tag("P"), Predicates.Text.Contains("multi-part"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-nbsp", RemediationActions.Tag("P"), Predicates.Text.Contains("word gap"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-nonbreak-hyphen", RemediationActions.Tag("P"), Predicates.Text.Contains("INV-10042"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-quotes", RemediationActions.Tag("P"), Predicates.Text.Contains("\"quote\" 'single'"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-e-accent", RemediationActions.Tag("P"), Predicates.Text.Contains("café"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c01-spaces", RemediationActions.Tag("P"), Predicates.Text.Contains("three spaces"), CandidateSelector.Text(Granularity.Line)),
-                // A regex written against the normalized form matches both members of a pair...
-                new Rule(
-                    "c01-regex-normalized",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Matches(@"^INV-10042$"),
-                    CandidateSelector.Text(Granularity.Word)),
-                // ...while the same expression against the raw non-breaking-hyphen form matches nothing,
-                // and only matches once normalization is switched off for that rule.
-                new Rule(
-                    "c01-regex-raw",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Matches("^INV‑10042$"),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule(
-                    "c01-regex-raw-unnormalized",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Matches("^INV‑10042$"),
-                    CandidateSelector.Text(Granularity.Word))
-                {
-                    TextNormalization = TextNormalizationOptions.None
-                }
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            artifacts: FooterArtifacts());
-
-    // C-02: Operator fragmentation
     internal static PdfDocument CreateC02Input()
     {
         var doc = PdfDocument.Create();
@@ -783,30 +283,6 @@ internal static class RemediationFixtureGenerator
         WriteLine(writer, font, 520, 24, "Page 1");
         return doc;
     }
-
-    internal static RuleSet CreateC02RuleSet() =>
-        new(
-            "c-02-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c02-line", RemediationActions.Tag("P"), Predicates.Text.Contains("Invoice"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c02-line2", RemediationActions.Tag("P"), Predicates.Text.Contains("Subtotal"), CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "c02-tj-words",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Matches("^(Statement|#:|STM-12345)$"),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule("c02-tj-word1", RemediationActions.Tag("P"), Predicates.Text.Contains("Amount"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c02-tj-word2", RemediationActions.Tag("P"), Predicates.Text.Contains("Paid"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c02-state1", RemediationActions.Tag("P"), Predicates.Text.StartsWith("Spacing"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c02-state2", RemediationActions.Tag("P"), Predicates.Text.Contains("Char"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c02-state3", RemediationActions.Tag("P"), Predicates.Text.Contains("Horizontal"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c02-state4", RemediationActions.Tag("P"), Predicates.Text.Contains("Rise"), CandidateSelector.Text(Granularity.Line))
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            artifacts: FooterArtifacts());
 
     private static byte[] Encode(IWritableFont font, string text)
     {
@@ -885,37 +361,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC03RuleSet() =>
-        new(
-            "c-03-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule(
-                    "c03-logo",
-                    RemediationActions.Tag("Figure"),
-                    Predicates.Content.Type(RemediationCandidateKind.Image).And(Predicates.Flow.InZone("header-zone")),
-                    CandidateSelector.Content(RemediationCandidateKind.Image)),
-                new Rule("c03-footer-logo", RemediationActions.Artifact(ArtifactSubtype.Layout), Predicates.Content.Type(RemediationCandidateKind.Image).And(Predicates.Flow.InZone("footer")), CandidateSelector.Content(RemediationCandidateKind.Image)),
-                new Rule("c03-lines", RemediationActions.Artifact(ArtifactSubtype.Layout), Predicates.Content.Type(RemediationCandidateKind.Path), CandidateSelector.Content(RemediationCandidateKind.Path)),
-                new Rule("c03-form", RemediationActions.Artifact(ArtifactSubtype.Layout), Predicates.Content.Type(RemediationCandidateKind.Form), CandidateSelector.Content(RemediationCandidateKind.Form)),
-                new Rule("c03-shading", RemediationActions.Artifact(ArtifactSubtype.Layout), Predicates.Content.Type(RemediationCandidateKind.Shading), CandidateSelector.Content(RemediationCandidateKind.Shading)),
-                BodyParagraphRule(),
-                new Rule(
-                    "c03-logo-alt",
-                    RemediationActions.Alt(ClaimPredicates.FromRule("c03-logo"), "Acme logo"),
-                    stage: Stage.Refine)
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: new[]
-            {
-                FooterZones()[0],
-                new TolerancedZone("header-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 680, 600, 792))),
-                new TolerancedZone("graphics-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 390, 612, 690))),
-                new TolerancedZone("page-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 0, 612, 792)))
-            });
-
-    // C-08: Existing annotations
     internal static PdfDocument CreateC08Input()
     {
         var doc = PdfDocument.Create();
@@ -1005,33 +450,6 @@ internal static class RemediationFixtureGenerator
         };
     }
 
-    internal static RuleSet CreateC08RuleSet() => new(
-        "c-08-rules",
-        new[]
-        {
-            new Rule("c08-link-text", RemediationActions.Tag("Link"),
-                Predicates.Text.Equals("Go to details").Or(Predicates.Text.Equals("Visit example")),
-                CandidateSelector.Text(Granularity.Line)),
-            new Rule("c08-target", RemediationActions.Tag("P"), Predicates.Text.Equals("Details target"),
-                CandidateSelector.Text(Granularity.Line)),
-            new Rule("c08-internal-link", RemediationActions.AdoptAnnotation(
-                    ClaimPredicates.FromRule("c08-link-text"),
-                    destinationTarget: ClaimPredicates.FromRule("c08-target")),
-                Predicates.Annotation.Subtype("Link").And(
-                    Predicates.Annotation.DestinationKind(AnnotationDestinationKind.Internal)),
-                CandidateSelector.Annotations()),
-            new Rule("c08-uri-link", RemediationActions.AdoptAnnotation(
-                    ClaimPredicates.FromRule("c08-link-text")),
-                Predicates.Annotation.Subtype("Link").And(
-                    Predicates.Annotation.DestinationKind(AnnotationDestinationKind.Uri)),
-                CandidateSelector.Annotations()),
-            new Rule("c08-stamp", RemediationActions.AdoptAnnotation(),
-                Predicates.Annotation.Subtype("Stamp"), CandidateSelector.Annotations()),
-            new Rule("c08-attachment", RemediationActions.AdoptAnnotation(),
-                Predicates.Annotation.Subtype("FileAttachment"), CandidateSelector.Annotations())
-        });
-
-    // C-10: Running header, footer, and watermark artifact property lists
     internal static PdfDocument CreateC10Input()
     {
         var doc = PdfDocument.Create();
@@ -1048,35 +466,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC10RuleSet() => new(
-        "c-10-rules",
-        new[]
-        {
-            new Rule("c10-header", RemediationActions.HeaderArtifact(),
-                Predicates.Text.Equals("Acme Corp - Confidential"), CandidateSelector.Text(Granularity.Line),
-                artifact: "c10-header"),
-            new Rule("c10-footer", RemediationActions.FooterArtifact(),
-                Predicates.Text.StartsWith("Page "), CandidateSelector.Text(Granularity.Line),
-                artifact: "c10-footer"),
-            new Rule("c10-watermark", RemediationActions.WatermarkArtifact(),
-                Predicates.Text.Equals("DRAFT"), CandidateSelector.Text(Granularity.Line),
-                artifact: "c10-watermark"),
-            new Rule("c10-body", RemediationActions.Tag("P"),
-                Predicates.Text.StartsWith("Body page "), CandidateSelector.Text(Granularity.Line))
-        },
-        artifacts: new[]
-        {
-            new RemediationArtifactInventoryItem("c10-header", ArtifactSubtype.Pagination,
-                semanticSubtype: ArtifactSemanticSubtype.Header, includeBoundingBox: true,
-                attached: new[] { ArtifactAttachmentEdge.Top }),
-            new RemediationArtifactInventoryItem("c10-footer", ArtifactSubtype.Pagination,
-                semanticSubtype: ArtifactSemanticSubtype.Footer, includeBoundingBox: true,
-                attached: new[] { ArtifactAttachmentEdge.Bottom }),
-            new RemediationArtifactInventoryItem("c10-watermark", ArtifactSubtype.Pagination,
-                semanticSubtype: ArtifactSemanticSubtype.Watermark, includeBoundingBox: true)
-        });
-
-    // C-04: Leftover accounting
     internal static PdfDocument CreateC04Input()
     {
         var doc = PdfDocument.Create();
@@ -1105,25 +494,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC04RuleSet() =>
-        CreateC04RuleSet(FooterArtifacts());
-
-    internal static RuleSet CreateC04RuleSetWithoutInventory() =>
-        CreateC04RuleSet(Array.Empty<RemediationArtifactInventoryItem>());
-
-    private static RuleSet CreateC04RuleSet(RemediationArtifactInventoryItem[] artifacts) =>
-        new(
-            "c-04-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c04-claimed", RemediationActions.Tag("P"), Predicates.Text.Contains("Claimed"), CandidateSelector.Text(Granularity.Line))
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            artifacts: artifacts);
-
-    // C-05: Semantic assertion error
     internal static PdfDocument CreateC05Input()
     {
         var doc = PdfDocument.Create();
@@ -1137,26 +507,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC05RuleSet() =>
-        new(
-            "c-05-rules",
-            new[]
-            {
-                // Deliberate error: footer tagged H1 instead of artifact, total artifacted
-                new Rule("c05-bad-footer", RemediationActions.Tag("H1"), Predicates.Text.Contains("Page 1"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c05-title", RemediationActions.Tag("P"), Predicates.Text.Contains("Invoice Statement"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c05-bad-total", RemediationActions.Artifact(ArtifactSubtype.Layout), Predicates.Text.Contains("Total"), CandidateSelector.Text(Granularity.Line))
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            assertions: new[]
-            {
-                new RuleOutputCountAssertion("c05-total-must-remain-content", "c05-bad-total", AssertionCount.Exactly(0))
-            });
-    // No artifact inventory: this fixture deliberately tags the footer H1 and artifacts the total, so
-    // declaring footer furniture would raise inventory diagnostics unrelated to what C-05 tests.
-
-    // C-06: Template drift pair
     internal static PdfDocument CreateC06aInput()
     {
         var doc = PdfDocument.Create();
@@ -1186,21 +536,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC06aRuleSet() =>
-        new(
-            "c-06-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c06-title", RemediationActions.Tag("H1"), Predicates.Text.Equals("Account Statement"), CandidateSelector.Text(Granularity.Line), cardinality: RuleCardinality.Exactly(1)),
-                new Rule("c06-bill-to", RemediationActions.Tag("P"), Predicates.Text.Equals("Bill To"), CandidateSelector.Text(Granularity.Line), cardinality: RuleCardinality.Exactly(1)),
-                new Rule("c06-ada", RemediationActions.Tag("P"), Predicates.Text.Contains("Ada"), CandidateSelector.Text(Granularity.Line), cardinality: RuleCardinality.Exactly(1))
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: FooterZones(),
-            artifacts: FooterArtifacts());
-
-    // C-12: Multi-page continuous table plus an independent terms flow
     internal static PdfDocument CreateC12Input()
     {
         var doc = PdfDocument.Create();
@@ -1247,91 +582,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC12RuleSet() =>
-        new(
-            "c-12-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule(
-                    "c12-intro",
-                    RemediationActions.Tag("H1"),
-                    Predicates.Text.StartsWith("Continued"),
-                    CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "c12-header-cell",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Anchor.SameRowAs("header", 4).And(Predicates.Flow.InZone("table-band")),
-                    CandidateSelector.Text(Granularity.Word),
-                    pages: PageSelector.Range(0, 3)),
-                new Rule(
-                    "c12-body-cell",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Flow.InFlowRegion("items").And(Predicates.Flow.InZone("table-band")),
-                    CandidateSelector.Text(Granularity.Word),
-                    pages: PageSelector.Range(0, 3)),
-                // Flow boundaries sit outside the region they delimit, so the terms heading and closing
-                // line are claimed explicitly rather than left to be absorbed.
-                new Rule(
-                    "c12-terms-heading",
-                    RemediationActions.Tag("H2"),
-                    Predicates.Text.Equals("Terms and Conditions"),
-                    CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "c12-terms-end",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Equals("End of Terms"),
-                    CandidateSelector.Text(Granularity.Line)),
-                new Rule(
-                    "c12-subtotal-cell",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Anchor.SameRowAs("total", 4).And(Predicates.Flow.InZone("table-band")),
-                    CandidateSelector.Text(Granularity.Word),
-                    pages: PageSelector.Range(3, 3)),
-                new Rule(
-                    "c12-terms",
-                    RemediationActions.Tag("P"),
-                    Predicates.Flow.InFlowRegion("terms"),
-                    CandidateSelector.Text(Granularity.Line),
-                    pages: PageSelector.Range(3, 4)),
-                new Rule(
-                    "c12-table",
-                    RemediationActions.TableOverFlattenedCells(
-                        ClaimPredicates.FromRule("c12-header-cell")
-                            .Or(ClaimPredicates.FromRule("c12-body-cell"))
-                            .Or(ClaimPredicates.FromRule("c12-subtotal-cell")),
-                        ClaimPredicates.FromRule("c12-header-cell"),
-                        240, 400, 580),
-                    stage: Stage.Group)
-            },
-            new[]
-            {
-                RemediationAnchor.TextLabel("header", "Item") with { Pages = PageSelector.Range(0, 3) },
-                RemediationAnchor.TextLabel("total", "Total") with { Pages = PageSelector.Range(3, 3) },
-                RemediationAnchor.TextLabel("terms-start", "Terms and Conditions")
-                    with { Pages = PageSelector.Range(3, 3) },
-                RemediationAnchor.TextLabel("terms-end", "End of Terms")
-                    with { Pages = PageSelector.Last }
-            },
-            tolerancedZones: FooterZones()
-                .Append(new TolerancedZone("table-band", LayoutCoord.Absolute(new PdfRect<double>(0, 585, 612, 745))))
-                .ToArray(),
-            flowRegions: new[]
-            {
-                new FlowRegion(
-                    "items",
-                    FlowBoundary.Anchor("header"),
-                    FlowBoundary.Anchor("total"),
-                    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd),
-                new FlowRegion(
-                    "terms",
-                    FlowBoundary.Anchor("terms-start"),
-                    FlowBoundary.Anchor("terms-end"),
-                    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd)
-            },
-            artifacts: FooterArtifacts());
-
-    // C-23: Label/value pairs
     internal static PdfDocument CreateC23Input()
     {
         var doc = PdfDocument.Create();
@@ -1367,83 +617,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC23RuleSet() =>
-        new(
-            "c-23-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c23-inv-label", RemediationActions.Tag("P"), Predicates.Text.Equals("Invoice"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-inv-val", RemediationActions.Tag("P"), Predicates.Anchor.RightOf("c23-inv-label", tolerance: 5).And(Predicates.Text.Equals("INV-10042")), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-due-label", RemediationActions.Tag("P"), Predicates.Text.Equals("Due"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-due-val", RemediationActions.Tag("P"), Predicates.Anchor.Below("c23-due-label", maxDistance: 30), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-po-label", RemediationActions.Tag("P"), Predicates.Text.Equals("PO"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-po-val", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("c23-po-label").And(Predicates.Text.Equals("PO-9988")), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-notes-label", RemediationActions.Tag("P"), Predicates.Text.Equals("Notes:"), CandidateSelector.Text(Granularity.Line)),
-                // The empty-value case: nothing sits below "Notes:" except the next section header, so
-                // a bounded Below must select nothing rather than silently capturing it.
-                new Rule(
-                    "c23-notes-val",
-                    RemediationActions.Tag("P"),
-                    // maxDistance is edge-to-edge, and the next section header sits ~14pt below the
-                    // label's box, so the bound is what stops an empty value capturing it.
-                    Predicates.Anchor.Below("c23-notes-label", maxDistance: 10),
-                    CandidateSelector.Text(Granularity.Word),
-                    cardinality: RuleCardinality.Exactly(0)),
-                new Rule("c23-next-hdr", RemediationActions.Tag("H1"), Predicates.Text.Equals("Next Section Header"), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c23-total-label", RemediationActions.Tag("P"), Predicates.Text.Equals("Total"), CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-total-val", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("c23-total-label").And(Predicates.Text.Contains("$150.00")), CandidateSelector.Text(Granularity.Word)),
-                // Remaining anchor-relative forms the entry names. They run after the rules above, so
-                // their targets are already owned and matched inputs rather than claims are the
-                // evidence that each selected the intended value.
-                new Rule(
-                    "c23-between",
-                    RemediationActions.Tag("P"),
-                    // Between spans the corridor from one anchor to the other, so it selects the label
-                    // column rather than a value parked far to the right.
-                    Predicates.Anchor.Between("c23-due-label", "c23-total-label")
-                        .And(Predicates.Text.Equals("PO")),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule(
-                    "c23-same-column",
-                    RemediationActions.Tag("P"),
-                    Predicates.Anchor.SameColumnAs("c23-due-label", tolerance: 6)
-                        .And(Predicates.Text.Equals("2026-01-15")),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule(
-                    "c23-nearest",
-                    RemediationActions.Tag("P"),
-                    Predicates.Anchor.NearestTo("c23-total-label", AnchorDirection.Right)
-                        .And(Predicates.Text.Contains("$150.00")),
-                    CandidateSelector.Text(Granularity.Word)),
-                new Rule("c23-residual", RemediationActions.Tag("P"), RemediationPredicate.Always, CandidateSelector.Text(Granularity.Word))
-            },
-            new[]
-            {
-                RemediationAnchor.Selector("c23-inv-label", Granularity.Word, Predicates.Text.Equals("Invoice"), AnchorSelection.FirstInReadingOrder),
-                RemediationAnchor.Selector("c23-due-label", Granularity.Word, Predicates.Text.Equals("Due")),
-                RemediationAnchor.Selector("c23-po-label", Granularity.Word, Predicates.Text.Equals("PO")),
-                RemediationAnchor.Selector("c23-notes-label", Granularity.Word, Predicates.Text.Equals("Notes:")),
-                RemediationAnchor.Selector("c23-total-label", Granularity.Word, Predicates.Text.Equals("Total"))
-            },
-            tolerancedZones: FooterZones()
-                .Append(new TolerancedZone(
-                    "c23-spacing",
-                    LayoutCoord.Absolute(new PdfRect<double>(0, 100, 612, 792))))
-                .ToArray(),
-            artifacts: FooterArtifacts()
-                .Append(new RemediationArtifactInventoryItem(
-                    // Word-granularity rules claim words but not the spaces between them, so the
-                    // inter-word gaps are absorbed as layout artifacts. Declared as an open count
-                    // because the number is a property of the text, not of the rule set — pinning it
-                    // to a constant made the fixture break on any edit and hid what the items were.
-                    "c23-inter-word-spacing",
-                    ArtifactSubtype.Layout,
-                    zoneId: "c23-spacing",
-                    occurrence: new AssertionCount(0)))
-                .ToArray());
-
-    // C-29: Structural composition across explicit Group passes
     internal static PdfDocument CreateC29aInput()
     {
         var doc = PdfDocument.Create();
@@ -1456,102 +629,6 @@ internal static class RemediationFixtureGenerator
         WriteLine(writer, font, 140, 650, "Inner item body");
         return doc;
     }
-
-    internal static RuleSet CreateC29aRuleSet() =>
-        new(
-            "c-29-a-rules",
-            new[]
-            {
-                new Rule(
-                    "c29a-outer-label",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Text.Equals("1."),
-                    CandidateSelector.Text(Granularity.Line),
-                    slot: "c29a-outer-label"),
-                new Rule(
-                    "c29a-outer-text",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Equals("Outer item body"),
-                    CandidateSelector.Text(Granularity.Line),
-                    slot: "c29a-outer-text"),
-                new Rule(
-                    "c29a-inner-label",
-                    RemediationActions.Tag("Span"),
-                    Predicates.Text.Equals("a."),
-                    CandidateSelector.Text(Granularity.Line),
-                    slot: "c29a-inner-label"),
-                new Rule(
-                    "c29a-inner-text",
-                    RemediationActions.Tag("P"),
-                    Predicates.Text.Equals("Inner item body"),
-                    CandidateSelector.Text(Granularity.Line),
-                    slot: "c29a-inner-text"),
-                new Rule(
-                    "c29a-inner-body",
-                    RemediationActions.Group(
-                        "LBody",
-                        ClaimPredicates.FromRule("c29a-inner-label")
-                            .Or(ClaimPredicates.FromRule("c29a-inner-text"))),
-                    stage: Stage.Group,
-                    slot: "c29a-inner-body"),
-                new Rule(
-                    "c29a-inner-item",
-                    RemediationActions.Group("LI", ClaimPredicates.FromRule("c29a-inner-body")),
-                    stage: Stage.Group,
-                    slot: "c29a-inner-item",
-                    groupPass: 10),
-                new Rule(
-                    "c29a-inner-list",
-                    RemediationActions.Group("L", ClaimPredicates.FromRule("c29a-inner-item")),
-                    stage: Stage.Group,
-                    slot: "c29a-inner-list",
-                    groupPass: 20),
-                new Rule(
-                    "c29a-outer-body",
-                    RemediationActions.Group(
-                        "LBody",
-                        ClaimPredicates.FromRule("c29a-outer-label")
-                            .Or(ClaimPredicates.FromRule("c29a-outer-text"))
-                            .Or(ClaimPredicates.FromRule("c29a-inner-list"))),
-                    stage: Stage.Group,
-                    slot: "c29a-outer-body",
-                    groupPass: 30),
-                new Rule(
-                    "c29a-outer-item",
-                    RemediationActions.Group("LI", ClaimPredicates.FromRule("c29a-outer-body")),
-                    stage: Stage.Group,
-                    slot: "c29a-outer-item",
-                    groupPass: 40),
-                new Rule(
-                    "c29a-outer-list",
-                    RemediationActions.Group("L", ClaimPredicates.FromRule("c29a-outer-item")),
-                    stage: Stage.Group,
-                    slot: "c29a-outer-list",
-                    groupPass: 50)
-            },
-            structuralTemplate: Template(
-                Node(
-                    "L",
-                    "c29a-outer-list",
-                    Node(
-                        "LI",
-                        "c29a-outer-item",
-                        Node(
-                            "LBody",
-                            "c29a-outer-body",
-                            Node("Span", "c29a-outer-label"),
-                            Node("P", "c29a-outer-text"),
-                            Node(
-                                "L",
-                                "c29a-inner-list",
-                                Node(
-                                    "LI",
-                                    "c29a-inner-item",
-                                    Node(
-                                        "LBody",
-                                        "c29a-inner-body",
-                                        Node("Span", "c29a-inner-label"),
-                                        Node("P", "c29a-inner-text")))))))));
 
     internal static PdfDocument CreateC29bInput()
     {
@@ -1570,95 +647,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC29bRuleSet()
-    {
-        var alphaZone = ClaimPredicates.Within("c29b-alpha-zone");
-        var betaZone = ClaimPredicates.Within("c29b-beta-zone");
-        return new RuleSet(
-            "c-29-b-rules",
-            new[]
-            {
-                C29bLeaf("c29b-alpha-h1", "H1", "Section Alpha"),
-                C29bLeaf("c29b-alpha-intro", "P", "Alpha introduction"),
-                C29bLeaf("c29b-alpha-h2", "H2", "Alpha detail"),
-                C29bLeaf("c29b-alpha-body", "P", "Alpha detail body"),
-                C29bLeaf("c29b-beta-h1", "H1", "Section Beta"),
-                C29bLeaf("c29b-beta-intro", "P", "Beta introduction"),
-                C29bLeaf("c29b-beta-h2", "H2", "Beta detail"),
-                C29bLeaf("c29b-beta-body", "P", "Beta detail body"),
-                new Rule(
-                    "c29b-alpha-inner",
-                    RemediationActions.Group(
-                        "Sect",
-                        ClaimPredicates.FromRule("c29b-alpha-h2")
-                            .Or(ClaimPredicates.FromRule("c29b-alpha-body"))
-                            .And(alphaZone)),
-                    stage: Stage.Group,
-                    slot: "c29b-alpha-inner"),
-                new Rule(
-                    "c29b-beta-inner",
-                    RemediationActions.Group(
-                        "Sect",
-                        ClaimPredicates.FromRule("c29b-beta-h2")
-                            .Or(ClaimPredicates.FromRule("c29b-beta-body"))
-                            .And(betaZone)),
-                    stage: Stage.Group,
-                    slot: "c29b-beta-inner"),
-                new Rule(
-                    "c29b-alpha-outer",
-                    RemediationActions.Group(
-                        "Sect",
-                        ClaimPredicates.FromRule("c29b-alpha-h1")
-                            .Or(ClaimPredicates.FromRule("c29b-alpha-intro"))
-                            .Or(ClaimPredicates.FromRule("c29b-alpha-inner"))
-                            .And(alphaZone)),
-                    stage: Stage.Group,
-                    slot: "c29b-alpha-outer",
-                    groupPass: 10),
-                new Rule(
-                    "c29b-beta-outer",
-                    RemediationActions.Group(
-                        "Sect",
-                        ClaimPredicates.FromRule("c29b-beta-h1")
-                            .Or(ClaimPredicates.FromRule("c29b-beta-intro"))
-                            .Or(ClaimPredicates.FromRule("c29b-beta-inner"))
-                            .And(betaZone)),
-                    stage: Stage.Group,
-                    slot: "c29b-beta-outer",
-                    groupPass: 10)
-            },
-            Array.Empty<RemediationAnchor>(),
-            tolerancedZones: new[]
-            {
-                new TolerancedZone("c29b-alpha-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 600, 612, 792))),
-                new TolerancedZone("c29b-beta-zone", LayoutCoord.Absolute(new PdfRect<double>(0, 360, 612, 570)))
-            },
-            structuralTemplate: Template(
-                C29bSectionTemplate("alpha"),
-                C29bSectionTemplate("beta")));
-    }
-
-    private static Rule C29bLeaf(string id, string tag, string text) =>
-        new(
-            id,
-            RemediationActions.Tag(tag),
-            Predicates.Text.Equals(text),
-            CandidateSelector.Text(Granularity.Line),
-            slot: id);
-
-    private static RemediationStructuralTemplateNode C29bSectionTemplate(string section) =>
-        Node(
-            "Sect",
-            $"c29b-{section}-outer",
-            Node("H1", $"c29b-{section}-h1"),
-            Node("P", $"c29b-{section}-intro"),
-            Node(
-                "Sect",
-                $"c29b-{section}-inner",
-                Node("H2", $"c29b-{section}-h2"),
-                Node("P", $"c29b-{section}-body")));
-
-    // C-30: Prescriptive template assembly and repeated BindOver occurrences
     internal static PdfDocument CreateC30Input()
     {
         var doc = PdfDocument.Create();
@@ -1672,32 +660,6 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC30RuleSet()
-    {
-        var template = new RemediationStructuralTemplate(new[]
-        {
-            new RemediationStructuralTemplateNode(
-                "Sect",
-                new[] { new RemediationStructuralTemplateNode("P", id: "line") },
-                id: "section",
-                occurrence: RemediationStructuralOccurrence.OneOrMore)
-        }, RemediationStructuralTemplateMode.Prescriptive);
-        return new RuleSet(
-            "c-30-rules",
-            new[]
-            {
-                new Rule("c30-line", RemediationActions.Bind(), candidates: CandidateSelector.Text(Granularity.Paragraph), slot: "line"),
-                new Rule(
-                    "c30-section",
-                    RemediationActions.BindOver(ClaimPredicates.FromSlot("line")),
-                    stage: Stage.Group,
-                    groupPass: 10,
-                    slot: "section")
-            },
-            structuralTemplate: template);
-    }
-
-    // C-24: Ambiguous and repeated anchors
     internal static PdfDocument CreateC24Input()
     {
         var doc = PdfDocument.Create();
@@ -1727,75 +689,4 @@ internal static class RemediationFixtureGenerator
         return doc;
     }
 
-    internal static RuleSet CreateC24RuleSet() =>
-        new(
-            "c-24-rules",
-            new[]
-            {
-                FooterRule(),
-                new Rule("c24-ambiguous-probe", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("ambiguous-date"), CandidateSelector.Text(Granularity.Line)),
-                // Zero-based: index 0 is the header occurrence, index 2 the footer one.
-                new Rule("c24-nth-first", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("first-date", 4), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c24-nth-third", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("third-date", 4), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c24-table-date", RemediationActions.Tag("P"), Predicates.Text.Equals("Table Date"), CandidateSelector.Text(Granularity.Line)),
-                // Referenced so the required anchor actually resolves: page 2 has no table, and the
-                // absence must read differently from ambiguity.
-                new Rule("c24-required-probe", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("page1-table-date", 4), CandidateSelector.Text(Granularity.Line)),
-                // Each of these resolves its repeated label a different way; none may diagnose.
-                new Rule("c24-styled", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("styled-date", 4), CandidateSelector.Text(Granularity.Line)),
-                new Rule("c24-scoped", RemediationActions.Tag("P"), Predicates.Anchor.SameRowAs("header-date-scoped", 4), CandidateSelector.Text(Granularity.Line)),
-                BodyParagraphRule()
-            },
-            new[]
-            {
-                RemediationAnchor.Selector("ambiguous-date", Granularity.Word, Predicates.Text.Equals("Date"), AnchorSelection.OptionalSingle),
-                // Page 1 carries three "Date" occurrences; page 2 only two, so the ordinal and
-                // discriminating anchors are scoped to the page whose ambiguity they resolve.
-                RemediationAnchor.Selector("first-date", Granularity.Word, Predicates.Text.Equals("Date"), AnchorSelection.NthInReadingOrder(0))
-                    with { Pages = PageSelector.First },
-                RemediationAnchor.Selector("third-date", Granularity.Word, Predicates.Text.Equals("Date"), AnchorSelection.NthInReadingOrder(2))
-                    with { Pages = PageSelector.First },
-                // Style discriminates the 16pt header occurrence from the 12pt ones.
-                RemediationAnchor.Selector("styled-date", Granularity.Word, Predicates.Text.Equals("Date"))
-                    with { Pages = PageSelector.First, Style = Predicates.Font.Size(NumericOperator.GreaterThanOrEqual, 16) },
-                // Page scoping makes the page-2 absence of the table a non-event.
-                RemediationAnchor.TextLabel("header-date-scoped", "Header Date 2026-01-01")
-                    with { Pages = PageSelector.First },
-                RemediationAnchor.TextLabel("page1-table-date", "Table Date", selection: AnchorSelection.RequiredSingle)
-            },
-            tolerancedZones: FooterZones(),
-            artifacts: FooterArtifacts());
-
-    #endregion
-}
-
-internal sealed record GeneratedRemediationInput(string FileName, string Path, byte[] Bytes);
-
-internal sealed record GeneratedRemediationFixture(
-    string Name,
-    string FileName,
-    string? Path,
-    string InputPath,
-    PdfUaProfile Profile,
-    byte[] Bytes,
-    RemediationReport Report,
-    FixtureOutcome Outcome = FixtureOutcome.Commits);
-
-internal sealed record RemediationFixtureBlueprint(
-    string Name,
-    string BaseName,
-    Func<PdfDocument> CreateInput,
-    Func<RuleSet> CreateRuleSet,
-    FixtureOutcome Outcome = FixtureOutcome.Commits,
-    RemediationLeftoverPolicy? LeftoverPolicy = null);
-
-/// <summary>What a fixture is expected to do, so fixtures that must fail still run through the harness.</summary>
-internal enum FixtureOutcome
-{
-    /// <summary>Commits clean with no failed assertions.</summary>
-    Commits,
-    /// <summary>Commits, but a declared assertion is expected to fail — see C-05.</summary>
-    CommitsWithFailedAssertions,
-    /// <summary>Captured from a dry run and never committed; the diagnostics are the deliverable.</summary>
-    DiagnosesOnly
 }

@@ -1,0 +1,32 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "c-01",
+  "template": {
+    "id": "c-01",
+    "version": "1",
+    "profile": "PdfUa1",
+    "document": {
+      "tag": "Document",
+      "children": [
+        { "tag": "P", "name": "body", "occurrence": "ZeroOrMore", "children": [] }
+      ]
+    }
+  },
+  "bindings": [
+    { "id": "ligature", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "fi fl" } },
+    { "id": "soft-hyphen", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "multi-part" } },
+    { "id": "nbsp", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "word gap" } },
+    { "id": "dash", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "INV-10042" } },
+    { "id": "quotes", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "\"quote\" 'single'" } },
+    { "id": "composition", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "café" } },
+    { "id": "spaces", "target": { "slot": "/body" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textContains", "text": "three spaces" } },
+    { "id": "footer", "target": { "artifact": "footer" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textStartsWith", "text": "Page " } }
+  ],
+  "anchors": [],
+  "artifacts": [
+    { "id": "footer", "type": "Pagination", "semanticSubtype": "Footer", "includeBoundingBox": true, "attached": [ "Bottom" ], "minCount": 1, "maxCount": 1 }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": []
+}

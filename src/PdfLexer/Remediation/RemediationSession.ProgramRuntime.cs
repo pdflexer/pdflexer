@@ -573,7 +573,8 @@ public sealed partial class RemediationSession
                         emptyZones,
                         emptyFlows,
                         diagnostics,
-                        compiled.Program.TextNormalization);
+                        compiled.Program.TextNormalization)
+                        .WithProgramBinding(binding.Id, slot);
                     var candidates = SelectCandidates(pageState, binding.Candidates);
                     var matches = new List<(RemediationCandidate Candidate, PredicateResult Result)>();
                     foreach (var candidate in candidates)
@@ -891,7 +892,15 @@ public sealed partial class RemediationSession
                     DiagnosticCode.RuleCardinalityMismatch,
                     $"Program:{compiled.Program.Id}:Binding:{binding.Id}",
                     $"Program binding '{binding.Id}' expected {cardinality.ExpectedDescription} matched input(s) across its selected pages, but observed {run.InputsMatched}.",
-                    diagnostics);
+                    diagnostics,
+                    (binding.Target as BindingTarget.Slot)?.Reference,
+                    binding.Id,
+                    evidence: new Dictionary<string, object?>
+                    {
+                        ["expected"] = cardinality.ExpectedDescription,
+                        ["actual"] = run.InputsMatched,
+                        ["scope"] = cardinality.Scope.ToString()
+                    });
             }
             return;
         }
@@ -904,7 +913,16 @@ public sealed partial class RemediationSession
                     DiagnosticCode.RuleCardinalityMismatch,
                     $"Program:{compiled.Program.Id}:Binding:{binding.Id}:Page{page.Key + 1}",
                     $"Program binding '{binding.Id}' expected {cardinality.ExpectedDescription} matched input(s) on page {page.Key + 1}, but observed {page.Value}.",
-                    diagnostics);
+                    diagnostics,
+                    (binding.Target as BindingTarget.Slot)?.Reference,
+                    binding.Id,
+                    evidence: new Dictionary<string, object?>
+                    {
+                        ["expected"] = cardinality.ExpectedDescription,
+                        ["actual"] = page.Value,
+                        ["scope"] = cardinality.Scope.ToString(),
+                        ["pageIndex"] = page.Key
+                    });
             }
         }
     }
@@ -954,7 +972,10 @@ public sealed partial class RemediationSession
                         $"Program:{compiled.Program.Id}:Assertion:{assertion.Id}" +
                         (page is { } pi ? $":Page{pi + 1}" : string.Empty),
                         $"Program '{compiled.Program.Id}' assertion '{assertion.Id}'{pageText} expected {assertion.Expected.Description}, but observed {selected.Length}.",
-                        diagnostics);
+                        diagnostics,
+                        assertion.Slot,
+                        selected.FirstOrDefault()?.BindingId,
+                        selected.SelectMany(x => x.Candidates).Select(x => x.CandidateId).ToArray());
                 }
             }
         }
@@ -1207,6 +1228,10 @@ public sealed partial class RemediationSession
 
         foreach (var pageState in pageStates)
         {
+            ArtifactProgramWhitespaceResiduals(
+                pageState,
+                (_program ?? throw new InvalidOperationException("No compiled remediation program is selected."))
+                    .Program.TextNormalization);
             ApplyLeftoverPolicyAfterValidation(pageState);
             if (pageState.IsDirty)
             {
@@ -1218,6 +1243,30 @@ public sealed partial class RemediationSession
                     PdfIndirectRef.Create(new PdfStream(contents));
             }
         }
+    }
+
+    private static void ArtifactProgramWhitespaceResiduals(
+        PageRemediationState pageState,
+        TextNormalizationOptions normalization)
+    {
+        var residuals = EnumerateItems(pageState.WorkingContent)
+            .OfType<TextContent<double>>()
+            .Where(x => x.SourceReference != null)
+            .Where(x => string.IsNullOrWhiteSpace(normalization.Normalize(x.Text)))
+            .Where(x =>
+            {
+                var span = new SourceTextSpan(
+                    x.SourceReference!.Value,
+                    x.SourceCharacterOffset,
+                    x.Text.Length);
+                return pageState.TextOwnership.FindOverlaps(new[] { span }).Count == 0;
+            })
+            .Cast<IContentItem<double>>()
+            .ToArray();
+        if (residuals.Length == 0) return;
+        foreach (var residual in residuals)
+            pageState.WorkingContent.Wrap(new[] { residual }, new MarkedContent(PdfName.Artifact));
+        pageState.MarkDirty();
     }
 
     private static void AnnotateProgramAppliedBindings(RemediationClaim claim)

@@ -1,0 +1,315 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "invoice",
+  "template": {
+    "id": "invoice",
+    "version": "1",
+    "profile": "PdfUa2",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "H1",
+          "name": "title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "invoice-number",
+          "children": []
+        },
+        {
+          "tag": "Table",
+          "name": "items",
+          "children": [
+            {
+              "tag": "TR",
+              "name": "header",
+              "children": [
+                {
+                  "tag": "TH",
+                  "name": "item",
+                  "children": []
+                },
+                {
+                  "tag": "TH",
+                  "name": "quantity",
+                  "children": []
+                },
+                {
+                  "tag": "TH",
+                  "name": "amount",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "TR",
+              "name": "widget",
+              "children": [
+                {
+                  "tag": "TD",
+                  "name": "item",
+                  "children": []
+                },
+                {
+                  "tag": "TD",
+                  "name": "quantity",
+                  "children": []
+                },
+                {
+                  "tag": "TD",
+                  "name": "amount",
+                  "children": []
+                }
+              ]
+            },
+            {
+              "tag": "TR",
+              "name": "service",
+              "children": [
+                {
+                  "tag": "TD",
+                  "name": "item",
+                  "children": []
+                },
+                {
+                  "tag": "TD",
+                  "name": "quantity",
+                  "children": []
+                },
+                {
+                  "tag": "TD",
+                  "name": "amount",
+                  "children": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "tag": "P",
+          "name": "subtotal-label",
+          "children": []
+        }
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "title",
+      "target": {
+        "slot": "/title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Invoice 10042"
+      }
+    },
+    {
+      "id": "invoice-number",
+      "target": {
+        "slot": "/invoice-number"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textContains",
+        "text": "INV-10042"
+      }
+    },
+    {
+      "id": "header-item",
+      "target": {
+        "slot": "/items/header/item"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Item"
+      }
+    },
+    {
+      "id": "header-quantity",
+      "target": {
+        "slot": "/items/header/quantity"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Qty"
+      }
+    },
+    {
+      "id": "header-amount",
+      "target": {
+        "slot": "/items/header/amount"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Amount"
+      }
+    },
+    {
+      "id": "widget-item",
+      "target": {
+        "slot": "/items/widget/item"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Widget"
+      }
+    },
+    {
+      "id": "widget-quantity",
+      "target": {
+        "slot": "/items/widget/quantity"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "2"
+      }
+    },
+    {
+      "id": "widget-amount",
+      "target": {
+        "slot": "/items/widget/amount"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "10.00"
+      }
+    },
+    {
+      "id": "service-item",
+      "target": {
+        "slot": "/items/service/item"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Service"
+      }
+    },
+    {
+      "id": "service-quantity",
+      "target": {
+        "slot": "/items/service/quantity"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "and",
+        "predicates": [
+          {
+            "kind": "textEquals",
+            "text": "1"
+          },
+          {
+            "kind": "geometry",
+            "mode": "Contains",
+            "coord": {
+              "kind": "absolute",
+              "llx": 0,
+              "lly": 620,
+              "urx": 612,
+              "ury": 670
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "service-amount",
+      "target": {
+        "slot": "/items/service/amount"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Word"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "90.00"
+      }
+    },
+    {
+      "id": "subtotal-label",
+      "target": {
+        "slot": "/subtotal-label"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textContains",
+        "text": "Subtotal"
+      }
+    },
+    {
+      "id": "page-footer",
+      "target": {
+        "artifact": "page-footer"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textStartsWith",
+        "text": "Page "
+      }
+    }
+  ],
+  "anchors": [],
+  "artifacts": [
+    {
+      "id": "page-footer",
+      "type": "Pagination",
+      "semanticSubtype": "Footer",
+      "includeBoundingBox": true,
+      "attached": [
+        "Bottom"
+      ],
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": []
+}

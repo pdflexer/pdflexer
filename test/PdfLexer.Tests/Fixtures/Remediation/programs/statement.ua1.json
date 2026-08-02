@@ -1,0 +1,190 @@
+{
+  "schema": "pdflexer.remediation.program.preview1",
+  "id": "statement",
+  "template": {
+    "id": "statement",
+    "version": "1",
+    "profile": "PdfUa1",
+    "document": {
+      "tag": "Document",
+      "children": [
+        {
+          "tag": "H1",
+          "name": "title",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "bill-to-label",
+          "children": []
+        },
+        {
+          "kind": "fragmentMount",
+          "fragment": "address",
+          "alias": "bill-to-address"
+        },
+        {
+          "tag": "P",
+          "name": "ship-to-label",
+          "children": []
+        },
+        {
+          "tag": "P",
+          "name": "ship-to-value",
+          "children": []
+        }
+      ]
+    }
+  },
+  "bindings": [
+    {
+      "id": "title",
+      "target": {
+        "slot": "/title"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Account Statement"
+      }
+    },
+    {
+      "id": "bill-to-label",
+      "target": {
+        "slot": "/bill-to-label"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Bill To"
+      }
+    },
+    {
+      "id": "bill-to-name",
+      "target": {
+        "slot": "/bill-to-address/line"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Ada Lovelace"
+      }
+    },
+    {
+      "id": "bill-to-street",
+      "target": {
+        "slot": "/bill-to-address/line"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "123 Analytical Engine Way"
+      }
+    },
+    {
+      "id": "bill-to-city",
+      "target": {
+        "slot": "/bill-to-address/line"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "London"
+      }
+    },
+    {
+      "id": "ship-to-label",
+      "target": {
+        "slot": "/ship-to-label"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textEquals",
+        "text": "Ship To"
+      }
+    },
+    {
+      "id": "ship-to-value",
+      "target": {
+        "slot": "/ship-to-value"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "and",
+        "predicates": [
+          { "kind": "textEquals", "text": "Same as billing" },
+          { "kind": "anchorRelative", "relation": "Below", "id": "ship-to-label-anchor" }
+        ]
+      }
+    },
+    {
+      "id": "page-footer",
+      "target": {
+        "artifact": "page-footer"
+      },
+      "candidates": {
+        "kind": "text",
+        "granularity": "Line"
+      },
+      "predicate": {
+        "kind": "textStartsWith",
+        "text": "Page "
+      }
+    }
+  ],
+  "anchors": [
+    { "id": "ship-to-label-anchor", "kind": "textLabel", "text": "Ship To" }
+  ],
+  "artifacts": [
+    {
+      "id": "page-footer",
+      "type": "Pagination",
+      "semanticSubtype": "Footer",
+      "includeBoundingBox": true,
+      "attached": [
+        "Bottom"
+      ],
+      "minCount": 1,
+      "maxCount": 1
+    }
+  ],
+  "assertions": [],
+  "boundaries": [],
+  "fragments": [
+    {
+      "id": "address",
+      "root": {
+        "tag": "Sect",
+        "children": [
+          { "tag": "P", "name": "line", "occurrence": "OneOrMore", "children": [] }
+        ]
+      },
+      "bindings": [],
+      "anchors": [],
+      "artifacts": [],
+      "assertions": [],
+      "boundaries": []
+    }
+  ]
+}

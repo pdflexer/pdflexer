@@ -9,7 +9,7 @@ internal sealed class RemediateCmd
 {
     public string? File { get; set; }
 
-    public string Rules { get; set; } = null!;
+    public string Program { get; set; } = null!;
 
     public string? Output { get; set; }
 
@@ -23,34 +23,34 @@ internal sealed class RemediateCmd
 
     public string VeraPdfCommand { get; set; } = "verapdf";
 
-    public string? ExplainRule { get; set; }
+    public string? ExplainBinding { get; set; }
 
     public int? ExplainPage { get; set; }
 
     public static Command Create()
     {
-        return new Command("remediate", "Applies serialized remediation rules to an untagged PDF")
+        return new Command("remediate", "Applies a serialized remediation program to an untagged PDF")
         {
             new Option<string?>(new[] { "-f", "--file" })
             {
                 Description = "Path to the source PDF. Required unless --validate-only is used."
             },
-            new Option<string>(new[] { "-r", "--rules" })
+            new Option<string>(new[] { "-p", "--program" })
             {
                 IsRequired = true,
-                Description = "Path to a preview remediation program or legacy ruleset JSON file."
+                Description = "Path to a pdflexer.remediation.program.preview1 JSON file."
             },
             new Option<string?>(new[] { "-o", "--output" })
             {
                 Description = "Path for the remediated PDF. Required unless --dry-run or --validate-only is used."
             },
-            new Option<bool>("--dry-run", "Evaluate rules and print diagnostics without writing output."),
-            new Option<bool>("--validate-only", "Validate rule shape without parsing page content."),
+            new Option<bool>("--dry-run", "Evaluate bindings and print diagnostics without writing output."),
+            new Option<bool>("--validate-only", "Validate program declarations without parsing page content."),
             new Option<bool>("--authoring", "Run an authoring-mode dry-run and report incomplete work."),
             new Option<bool>("--verapdf", "Run veraPDF on the output PDF after a successful commit."),
             new Option<string>("--verapdf-command", () => "verapdf", "veraPDF executable path or command name."),
-            new Option<string?>("--explain-rule", "Retain and print rejection traces for this rule (dry-run only)."),
-            new Option<int?>("--explain-page", "Optional one-based page filter for --explain-rule.")
+            new Option<string?>("--explain-binding", "Retain and print rejection traces for this binding (dry-run only)."),
+            new Option<int?>("--explain-page", "Optional one-based page filter for --explain-binding.")
         };
     }
 
@@ -59,9 +59,7 @@ internal sealed class RemediateCmd
         try
         {
             if (!Preflight(cmd)) return 4;
-            if (SerializedRemediationProgram.IsProgram(cmd.Rules)) return HandleProgram(cmd);
-            Console.Error.WriteLine("warning: legacy remediation rules are deprecated; migrate to pdflexer.remediation.program.preview1.");
-            return HandleLegacyRules(cmd);
+            return HandleProgram(cmd);
         }
         catch (JsonException ex)
         {
@@ -93,9 +91,9 @@ internal sealed class RemediateCmd
             Console.Error.WriteLine("--output is required unless --dry-run or --validate-only is used.");
             return false;
         }
-        if (cmd.ExplainRule != null && !dryRun)
+        if (cmd.ExplainBinding != null && !dryRun)
         {
-            Console.Error.WriteLine("--explain-rule is dry-run only; use --dry-run or --authoring.");
+            Console.Error.WriteLine("--explain-binding is dry-run only; use --dry-run or --authoring.");
             return false;
         }
         if (cmd.ValidateOnly && cmd.VeraPdf)
@@ -108,7 +106,7 @@ internal sealed class RemediateCmd
 
     private static int HandleProgram(RemediateCmd cmd)
     {
-        var program = SerializedRemediationProgram.Load(cmd.Rules);
+        var program = SerializedRemediationProgram.Load(cmd.Program);
         var compiled = RemediationProgramCompiler.Compile(program);
         var declarationValidation = new ValidationReport(compiled.Errors);
         PrintValidation(declarationValidation);
@@ -138,12 +136,12 @@ internal sealed class RemediateCmd
         session.Use(compiled);
 
         var dryRun = cmd.DryRun || cmd.Authoring;
-        var report = cmd.ExplainRule == null
+        var report = cmd.ExplainBinding == null
             ? dryRun ? session.DryRun() : session.Commit()
             : session.DryRun(new RemediationTraceRequest(
-                new[] { cmd.ExplainRule },
+                new[] { cmd.ExplainBinding },
                 cmd.ExplainPage is { } page ? page - 1 : null));
-        PrintReport(report, programMode: true);
+        PrintReport(report);
         if (report.RuntimeDiagnostics.Any(d => d.IsBlocking))
         {
             return 3;
@@ -165,63 +163,9 @@ internal sealed class RemediateCmd
         return 0;
     }
 
-    private static int HandleLegacyRules(RemediateCmd cmd)
-    {
-        var job = SerializedRemediationRules.Load(cmd.Rules);
-        var declarationValidation = SerializedRemediationRules.ValidateDeclarations(job.RuleSet);
-        PrintValidation(declarationValidation);
-        if (!declarationValidation.IsValid)
-        {
-            return 2;
-        }
-
-        if (cmd.ValidateOnly)
-        {
-            return 0;
-        }
-
-        using var pdf = PdfDocument.Open(cmd.File!);
-        using var session = pdf.BeginRemediation(job.Session);
-
-        var validation = session.Validate(job.RuleSet);
-        PrintValidation(validation);
-        if (!validation.IsValid)
-        {
-            return 2;
-        }
-
-        session.Use(job.RuleSet);
-        var dryRun = cmd.DryRun || cmd.Authoring;
-        var report = cmd.ExplainRule == null
-            ? dryRun ? session.DryRun() : session.Commit()
-            : session.DryRun(new RemediationTraceRequest(
-                new[] { cmd.ExplainRule },
-                cmd.ExplainPage is { } page ? page - 1 : null));
-        PrintReport(report);
-        if (report.Diagnostics.Any(d => !d.StartsWith("[SUPPRESSED]", StringComparison.Ordinal)))
-        {
-            return 3;
-        }
-
-        if (dryRun)
-        {
-            return 0;
-        }
-
-        pdf.SaveTo(cmd.Output!);
-        Console.WriteLine($"Wrote {cmd.Output}");
-
-        if (cmd.VeraPdf)
-        {
-            return RunVeraPdf(cmd.VeraPdfCommand, cmd.Output!, job.Session.Profile);
-        }
-
-        return 0;
-    }
-
     private static void PrintValidation(ValidationReport validation)
     {
-        Console.WriteLine(validation.IsValid ? "Rule validation: passed" : "Rule validation: failed");
+        Console.WriteLine(validation.IsValid ? "Program validation: passed" : "Program validation: failed");
         foreach (var warning in validation.Warnings)
         {
             Console.WriteLine("warning: " + warning);
@@ -233,43 +177,40 @@ internal sealed class RemediateCmd
         }
     }
 
-    internal static void PrintReport(RemediationReport report, bool programMode = false)
+    internal static void PrintReport(RemediationReport report)
     {
         Console.WriteLine($"Committed: {report.Committed}");
-        Console.WriteLine($"{(programMode ? "Binding" : "Rule")} occurrences: {report.Claims.Count}");
-        Console.WriteLine($"Skipped {(programMode ? "binding" : "rule")} occurrences: {report.SkippedClaims.Count}");
+        Console.WriteLine($"Binding occurrences: {report.Claims.Count}");
+        Console.WriteLine($"Skipped binding occurrences: {report.SkippedClaims.Count}");
         foreach (var warning in report.Warnings)
         {
             Console.WriteLine("warning: " + warning);
         }
-        if (programMode)
+        foreach (var binding in report.BindingEvaluations)
         {
-            foreach (var binding in report.BindingEvaluations)
-            {
-                Console.WriteLine(
-                    $"binding: {binding.BindingId} layer={binding.DependencyLayer} " +
-                    $"slot={binding.ProgramSlot?.Path ?? "<none>"} artifact={binding.ArtifactId ?? "<none>"} " +
-                    $"considered={binding.InputsConsidered} matched={binding.InputsMatched} " +
-                    $"applied={binding.AppliedClaims} skipped={binding.SkippedClaims} " +
-                    $"cardinality={binding.CardinalityOutcome ?? "<none>"}");
-            }
-            foreach (var comparison in report.OrderComparisons)
-            {
-                Console.WriteLine(
-                    $"order: disposition={comparison.Disposition} " +
-                    $"container={comparison.ContainerSlot?.Path ?? "/"} " +
-                    $"first={comparison.FirstOccurrenceIdentity} second={comparison.SecondOccurrenceIdentity} " +
-                    $"source-inverted={comparison.SourceOrderInverted} " +
-                    $"geometry-inverted={comparison.GeometricOrderInverted}");
-            }
-            foreach (var diagnostic in report.RuntimeDiagnostics)
-            {
-                var output = diagnostic.IsBlocking ? Console.Error : Console.Out;
-                output.WriteLine(
-                    $"diagnostic: disposition={diagnostic.Disposition} code={diagnostic.Code} " +
-                    $"scope={diagnostic.Scope} slot={diagnostic.ProgramSlot?.Path ?? "<none>"} " +
-                    $"binding={diagnostic.BindingId ?? "<none>"} message={diagnostic.Message}");
-            }
+            Console.WriteLine(
+                $"binding: {binding.BindingId} layer={binding.DependencyLayer} " +
+                $"slot={binding.ProgramSlot?.Path ?? "<none>"} artifact={binding.ArtifactId ?? "<none>"} " +
+                $"considered={binding.InputsConsidered} matched={binding.InputsMatched} " +
+                $"applied={binding.AppliedClaims} skipped={binding.SkippedClaims} " +
+                $"cardinality={binding.CardinalityOutcome ?? "<none>"}");
+        }
+        foreach (var comparison in report.OrderComparisons)
+        {
+            Console.WriteLine(
+                $"order: disposition={comparison.Disposition} " +
+                $"container={comparison.ContainerSlot?.Path ?? "/"} " +
+                $"first={comparison.FirstOccurrenceIdentity} second={comparison.SecondOccurrenceIdentity} " +
+                $"source-inverted={comparison.SourceOrderInverted} " +
+                $"geometry-inverted={comparison.GeometricOrderInverted}");
+        }
+        foreach (var diagnostic in report.RuntimeDiagnostics)
+        {
+            var output = diagnostic.IsBlocking ? Console.Error : Console.Out;
+            output.WriteLine(
+                $"diagnostic: disposition={diagnostic.Disposition} code={diagnostic.Code} " +
+                $"scope={diagnostic.Scope} slot={diagnostic.ProgramSlot?.Path ?? "<none>"} " +
+                $"binding={diagnostic.BindingId ?? "<none>"} message={diagnostic.Message}");
         }
         foreach (var outcome in report.Outcomes.Where(x => x.PageIndexes.Count > 1))
         {
@@ -277,18 +218,6 @@ internal sealed class RemediateCmd
                 $"cross-page-binding: binding={outcome.RuleId} pages=" +
                 string.Join(",", outcome.PageIndexes.Select(x => x + 1)));
         }
-        foreach (var rule in report.RuleEvaluations)
-        {
-            var count = rule.Total;
-            Console.WriteLine(
-                (programMode
-                    ? $"binding: {rule.RuleId} "
-                    : $"rule: {rule.RuleId} stage={rule.Stage} group-pass={rule.GroupPass} ") +
-                $"considered={count.InputsConsidered} matched={count.InputsMatched} " +
-                $"applied={count.AppliedClaims} low-confidence={count.RejectedByConfidence} " +
-                $"conflict={count.RejectedByConflict}");
-        }
-
         if (report.AutoArtifacts.Count > 0)
         {
             Console.WriteLine($"Auto-artifacts: {report.AutoArtifacts.Count}");
@@ -333,12 +262,6 @@ internal sealed class RemediateCmd
                     $"destination={annotation.DestinationKind} blocks-conformance={annotation.BlocksConformance} " +
                     $"reason=\"{annotation.Reason}\"");
             }
-        }
-
-        foreach (var diagnostic in programMode ? Array.Empty<string>() : report.Diagnostics)
-        {
-            var output = diagnostic.StartsWith("[SUPPRESSED]", StringComparison.Ordinal) ? Console.Out : Console.Error;
-            output.WriteLine("diagnostic: " + diagnostic);
         }
 
         foreach (var occurrence in report.TemplateAssembly)
