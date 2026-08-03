@@ -4,7 +4,7 @@ using PdfLexer.Content;
 namespace PdfLexer.Remediation;
 
 /// <summary>JSON loader and writer for the greenfield prescriptive program language.</summary>
-public static class SerializedRemediationProgram
+public static partial class SerializedRemediationProgram
 {
     public const string CurrentSchema = "pdflexer.remediation.program.preview1";
 
@@ -36,7 +36,7 @@ public static class SerializedRemediationProgram
             CommentHandling = JsonCommentHandling.Skip
         });
         var root = document.RootElement;
-        RejectUnknown(root, "schema", "id", "textNormalization", "template", "bindings", "anchors", "artifacts", "assertions", "boundaries", "fragments");
+        RejectUnknown(root, "schema", "id", "textNormalization", "template", "bindings", "anchors", "artifacts", "assertions", "boundaries", "fragments", "regions", "regionAccounting");
         var schema = RequiredString(root, "schema");
         if (!string.Equals(schema, CurrentSchema, StringComparison.Ordinal))
         {
@@ -62,6 +62,8 @@ public static class SerializedRemediationProgram
         var assertions = Array(root, "assertions").Select(ParseAssertion).ToArray();
         var boundaries = Array(root, "boundaries").Select(ParseBoundary).ToArray();
         var fragments = Array(root, "fragments").Select(ParseFragment).ToArray();
+        var regions = Array(root, "regions").Select(ParseRegion).ToArray();
+        var regionAccounting = Array(root, "regionAccounting").Select(ParseRegionAccounting).ToArray();
         var program = new RemediationProgram(
             String(root, "id") ?? throw Missing(root, "id"),
             template,
@@ -71,7 +73,9 @@ public static class SerializedRemediationProgram
             assertions,
             ParseTextNormalization(OptionalObject(root, "textNormalization")),
             boundaries,
-            fragments);
+            fragments,
+            regions,
+            regionAccounting);
         return program;
     }
 
@@ -102,6 +106,12 @@ public static class SerializedRemediationProgram
         writer.WriteEndArray();
         writer.WriteStartArray("artifacts");
         foreach (var artifact in program.Artifacts) WriteArtifact(writer, artifact);
+        writer.WriteEndArray();
+        writer.WriteStartArray("regions");
+        foreach (var region in program.Regions) WriteRegion(writer, region);
+        writer.WriteEndArray();
+        writer.WriteStartArray("regionAccounting");
+        foreach (var accounting in program.RegionAccounting) WriteRegionAccounting(writer, accounting);
         writer.WriteEndArray();
         writer.WriteStartArray("assertions");
         foreach (var assertion in program.Assertions)
@@ -162,8 +172,10 @@ public static class SerializedRemediationProgram
 
     private static RemediationFragment ParseFragment(JsonElement json)
     {
-        RejectUnknown(json, "id", "root", "bindings", "anchors", "artifacts", "assertions", "boundaries");
+        RejectUnknown(json, "id", "root", "bindings", "anchors", "artifacts", "assertions", "boundaries", "regions", "regionAccounting");
         var artifacts = Array(json, "artifacts").Select(ParseArtifact).ToArray();
+        var regions = Array(json, "regions").Select(ParseRegion).ToArray();
+        var accounting = Array(json, "regionAccounting").Select(ParseRegionAccounting).ToArray();
         return new RemediationFragment(
             RequiredString(json, "id"),
             ParseNode(RequiredObject(json, "root")),
@@ -171,7 +183,9 @@ public static class SerializedRemediationProgram
             Array(json, "anchors").Select(ParseAnchor).ToArray(),
             artifacts,
             Array(json, "assertions").Select(ParseAssertion).ToArray(),
-            Array(json, "boundaries").Select(ParseBoundary).ToArray());
+            Array(json, "boundaries").Select(ParseBoundary).ToArray(),
+            regions,
+            accounting);
     }
 
     private static OccurrenceBoundary ParseBoundaryReference(JsonElement json)
@@ -279,7 +293,7 @@ public static class SerializedRemediationProgram
     private static RemediationPredicate ParsePredicate(JsonElement json)
     {
         RejectUnknown(json, "kind", "text", "pattern", "property", "type", "value", "operator", "count",
-            "number", "boolean", "mode", "coord", "relation", "id", "id2", "tolerance", "direction",
+            "number", "boolean", "mode", "coord", "relation", "id", "id2", "region", "tolerance", "direction",
             "maxDistance", "predicates", "predicate");
         var kind = String(json, "kind")?.ToLowerInvariant() ?? throw Missing(json, "kind");
         return kind switch
@@ -302,6 +316,9 @@ public static class SerializedRemediationProgram
                 Number(json, "tolerance"),
                 EnumValue<AnchorDirection>(json, "direction") ?? AnchorDirection.Any,
                 Number(json, "maxDistance")),
+            "inregion" => new RegionRemediationPredicate(
+                RequiredString(json, "region"),
+                EnumValue<GeometryMatchMode>(json, "mode") ?? GeometryMatchMode.Contains),
             "and" => Combine(Array(json, "predicates"), true),
             "or" => Combine(Array(json, "predicates"), false),
             "not" => ParsePredicate(RequiredObject(json, "predicate")).Not(),
@@ -463,6 +480,12 @@ public static class SerializedRemediationProgram
         writer.WriteStartArray("artifacts");
         foreach (var artifact in fragment.Artifacts) WriteArtifact(writer, artifact);
         writer.WriteEndArray();
+        writer.WriteStartArray("regions");
+        foreach (var region in fragment.Regions) WriteRegion(writer, region);
+        writer.WriteEndArray();
+        writer.WriteStartArray("regionAccounting");
+        foreach (var accounting in fragment.RegionAccounting) WriteRegionAccounting(writer, accounting);
+        writer.WriteEndArray();
         writer.WriteStartArray("assertions");
         foreach (var assertion in fragment.Assertions)
         {
@@ -576,6 +599,11 @@ public static class SerializedRemediationProgram
                 if (anchor.Tolerance is { } tolerance) writer.WriteNumber("tolerance", tolerance);
                 if (anchor.Direction != AnchorDirection.Any) writer.WriteString("direction", anchor.Direction.ToString());
                 if (anchor.MaxDistance is { } distance) writer.WriteNumber("maxDistance", distance);
+                break;
+            case RegionRemediationPredicate region:
+                writer.WriteString("kind", "inRegion");
+                writer.WriteString("region", region.RegionId);
+                if (region.Mode != GeometryMatchMode.Contains) writer.WriteString("mode", region.Mode.ToString());
                 break;
             default: throw new InvalidOperationException($"Predicate '{predicate.GetType().Name}' is not serializable by the first program language.");
         }
@@ -828,6 +856,7 @@ public static class SerializedRemediationProgram
             case GeometryRemediationPredicate geometry when geometry.Coord is
                 AbsoluteLayoutCoord or MarginRelativeLayoutCoord or PercentageLayoutCoord or
                 NamedZoneLayoutCoord or NamedAnchorLayoutCoord or BetweenAnchorsLayoutCoord:
+            case RegionRemediationPredicate:
                 return;
             case CompositeRemediationPredicate composite:
                 ValidatePredicate(composite.Left); ValidatePredicate(composite.Right); return;

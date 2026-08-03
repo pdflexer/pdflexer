@@ -57,10 +57,18 @@ public class RemediationVeraPdfTests
 
         var result = VeraPdfValidation.Validate(pdfBytes, profile);
         Assert.False(result.ProcessingFailed, $"veraPDF processing failed for {item.Id}/{profile}: {result.StandardError}");
-        Assert.True(result.IsCompliant,
-            $"{item.Id}/{profile} failed veraPDF validation:{Environment.NewLine}" +
-            $"Profile: {result.ProfileName}, Failed Rules: {result.FailedRules}, Failed Checks: {result.FailedChecks}{Environment.NewLine}" +
-            $"{result.Report}");
+        if (item.Expected.VeraPdfCompliant)
+        {
+            Assert.True(result.IsCompliant,
+                $"{item.Id}/{profile} failed veraPDF validation:{Environment.NewLine}" +
+                $"Profile: {result.ProfileName}, Failed Rules: {result.FailedRules}, Failed Checks: {result.FailedChecks}{Environment.NewLine}" +
+                $"{result.Report}");
+        }
+        else
+        {
+            Assert.False(result.IsCompliant,
+                $"{item.Id}/{profile} was expected to fail veraPDF validation (VeraPdfCompliant=false), but passed.");
+        }
     }
 
     [VeraPdfFact]

@@ -87,9 +87,9 @@ PDF/UA assurance as complete.
 | RRM-040 | P0 | Complete | Expected page furniture is not declarable, so artifacting is unbounded |
 | RRM-041 | P1 | Open | Recurring predicate logic cannot be named or reused |
 | RRM-042 | P0 | Partial | Preview programs declare and execute occurrence boundaries; legacy flow activation and real-producer validation remain open |
-| RRM-043 | P1 | Open | Region declarations are fragmented and do not compose |
+| RRM-043 | P1 | Complete | Region declarations are fragmented and do not compose |
 | RRM-044 | P1 | Partial | Preview nodes support language, alternate text, actual text, and expansion; tag-specific attributes remain open |
-| RRM-045 | P0 | Partial | Per-item leftover inventory is complete; guarded region absorption remains open |
+| RRM-045 | P0 | Complete | Per-item leftover inventory and guarded region absorption are complete |
 | RRM-046 | P0 | Partial | Preview order guardrail is implemented; real-producer and richer-layout validation remain open |
 
 RRM-016 through RRM-035 were added by a second review pass on 2026-07-24 that examined the
@@ -1926,7 +1926,7 @@ declares `startsOn` explicitly.
 
 **Completion criteria**
 
-- [ ] Flow-region activation is not capped at one instance per page; a page holds an ordered list of
+- [x] Flow-region activation is not capped at one instance per page; a page holds an ordered list of
   resolutions per region.
 - [x] A repeating composite slot carries an occurrence boundary, declared or derived.
 - [ ] The default derivation from the declared opening child is specified and tested, including the
@@ -1945,7 +1945,7 @@ Partial until nested outer-boundary dominance and representative real-producer c
 
 ## RRM-043: Region declarations are fragmented and do not compose
 
-**Status:** Open
+**Status:** Complete
 
 **Priority:** P1
 
@@ -1971,11 +1971,11 @@ anchor-relative selection is expressed in the same vocabulary as everything else
 
 **Completion criteria**
 
-- [ ] One region declaration subsumes named zones, toleranced zones, and flow regions.
-- [ ] Tolerance and continuation are independent properties, valid in combination.
-- [ ] Anchors yield regions usable anywhere a region is accepted.
-- [ ] Named layout zones remain available as presets over the unified type.
-- [ ] Existing declarations migrate mechanically, and the serialized schema expresses the unified
+- [x] One region declaration subsumes named zones, toleranced zones, and flow regions.
+- [x] Tolerance and continuation are independent properties, valid in combination.
+- [x] Anchors yield regions usable anywhere a region is accepted.
+- [x] Named layout zones remain available as presets over the unified type.
+- [x] Existing declarations migrate mechanically, and the serialized schema expresses the unified
   form.
 
 ---
@@ -2021,7 +2021,7 @@ expansion on the Document root and child occurrences. `/Scope`, `/ListNumbering`
 
 ## RRM-045: Prescriptive content accounting is per item and its diagnostic identifies nothing
 
-**Status:** Partial
+**Status:** Complete
 
 **Priority:** P0
 
@@ -2034,9 +2034,7 @@ continuation notices — so each new sample of a dynamic family yields new block
 backlog never closes. `RemediationArtifactInventoryItem.ZoneId` does not help: it constrains where a
 *declared* artifact may appear, and says nothing about what a region's unbound content is.
 
-The preview now populates `unaccountedContent` per text or graphical item, including deterministic
-raw-span fallback records when structured paragraph/line candidates are unavailable. Region-scoped
-absorption remains deferred.
+The preview populates `unaccountedContent` per exact text span or atomic graphical item and applies guarded region accounting before leftover validation. Absorption creates ordinary artifact claims and reports each item with its region and artifact evidence.
 
 **Impact**
 
@@ -2047,12 +2045,12 @@ absorption remains deferred.
 
 **Completion criteria**
 
-- [ ] The artifact inventory supports region-scoped absorption: unbound painting content in a
+- [x] The artifact inventory supports region-scoped absorption: unbound painting content in a
   declared region is a declared artifact of a stated subtype.
-- [ ] Absorption is bounded by the declared region and remains a blocker everywhere else.
-- [ ] Absorbed content is reported per item, so a reviewer can see what a catch region swallowed.
+- [x] Absorption is bounded by the declared region and remains a blocker everywhere else.
+- [x] Absorbed content is reported per item, so a reviewer can see what a catch region swallowed.
 - [x] `unaccountedContent` is populated in prescriptive mode, identifying each unaccounted item.
-- [ ] Region-scoped absorption round-trips through the serialized schema.
+- [x] Region-scoped absorption round-trips through the serialized schema.
 
 ---
 

@@ -1,9 +1,0 @@
-{
-  "schema": "pdflexer.remediation.program.preview1", "id": "c-04-base",
-  "template": { "id": "c-04", "version": "1", "profile": "PdfUa2", "document": { "tag": "Document", "children": [ { "tag": "P", "name": "claimed", "children": [] } ] } },
-  "bindings": [
-    { "id": "claimed", "target": { "slot": "/claimed" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textEquals", "text": "Claimed Line 1" } },
-    { "id": "footer", "target": { "artifact": "footer" }, "candidates": { "kind": "text", "granularity": "Line" }, "predicate": { "kind": "textStartsWith", "text": "Page " } }
-  ],
-  "anchors": [], "artifacts": [ { "id": "footer", "type": "Pagination", "semanticSubtype": "Footer", "includeBoundingBox": true, "attached": [ "Bottom" ], "minCount": 1, "maxCount": 1 } ], "assertions": [], "boundaries": [], "fragments": []
-}

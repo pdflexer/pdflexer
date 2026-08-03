@@ -27,6 +27,8 @@ public sealed partial class RemediationSession : IDisposable
         DiagnosticCode.AnnotationAdoptionAmbiguous,
         DiagnosticCode.AnnotationAlreadyConsumed,
         DiagnosticCode.PrescriptiveUnaccountedContent,
+        DiagnosticCode.ProgramRegionAccountingConflict,
+        DiagnosticCode.ProgramRegionAccountingAmbiguous,
         DiagnosticCode.TemplateIdentityCollision
     };
     private RemediationTraceRequest? _traceRequest;

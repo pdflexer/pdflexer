@@ -461,6 +461,146 @@ public sealed class RemediationProgramCompilerTests
             x.Code == DiagnosticCode.TemplateWrongOrder && x.IsBlocking);
     }
 
+    [Fact]
+    public void OccurrenceSelectorResolvesSameOccurrenceNthAndNearestPrevious()
+    {
+        using var document = PdfDocument.Create();
+        var page = document.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12)
+                .TextMove(40, 750).Text("Section 1")
+                .TextMove(40, 720).Text("Section 1 Label")
+                .TextMove(40, 700).Text("Section 1 Value")
+                .TextMove(40, 650).Text("Section 2")
+                .TextMove(40, 620).Text("Section 2 Label")
+                .TextMove(40, 600).Text("Section 2 Value")
+                .EndText();
+        }
+
+        var template = new RemediationTemplate(
+            "repeated-sections", "1", PdfUaProfile.PdfUa1,
+            new RemediationTemplateNode("Document", children: new[]
+            {
+                new RemediationTemplateNode("Sect", "section", new[]
+                {
+                    new RemediationTemplateNode("H1", "header"),
+                    new RemediationTemplateNode("P", "label"),
+                    new RemediationTemplateNode("P", "value")
+                }, occurrence: TemplateOccurrence.OneOrMore, occurrenceBoundary: new OccurrenceBoundary.StartsOnSlot(SlotRef.Relative("./header")))
+            }));
+
+        var program = new RemediationProgram(
+            "occurrence-selector-program",
+            template,
+            new[]
+            {
+                new BindingRule("header", BindingTarget.ToSlot(SlotRef.Absolute("/section/header")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.Matches("^Section [0-9]+$")),
+                new BindingRule("label", BindingTarget.ToSlot(SlotRef.Absolute("/section/label")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.Contains("Label")),
+                new BindingRule("value", BindingTarget.ToSlot(SlotRef.Absolute("/section/value")),
+                    CandidateSelector.Text(Granularity.Line),
+                    Predicates.Text.Contains("Value").And(Predicates.Anchor.Below("header-anchor", maxDistance: 150)))
+            },
+            new[]
+            {
+                new SlotAnchor("header-anchor", SlotOccurrenceRef.SameOccurrence(SlotRef.Absolute("/section/header")))
+            });
+
+        using var session = document.BeginRemediation(new RemediationSessionConfiguration { StrictConformance = false }).Use(program);
+        var report = session.DryRun();
+
+        Assert.DoesNotContain(report.RuntimeDiagnostics, x => x.IsBlocking);
+        var valueClaims = report.Claims.Where(x => x.ProgramSlot?.Path == "/section/value").ToList();
+        Assert.Equal(2, valueClaims.Count);
+
+        // Also verify Nth selector
+        var nthTemplate = new RemediationTemplate(
+            "repeated-sections-nth", "1", PdfUaProfile.PdfUa1,
+            new RemediationTemplateNode("Document", children: new[]
+            {
+                new RemediationTemplateNode("Sect", "section", new[]
+                {
+                    new RemediationTemplateNode("H1", "header"),
+                    new RemediationTemplateNode("P", "label"),
+                    new RemediationTemplateNode("P", "value", occurrence: TemplateOccurrence.Optional)
+                }, occurrence: TemplateOccurrence.OneOrMore, occurrenceBoundary: new OccurrenceBoundary.StartsOnSlot(SlotRef.Relative("./header")))
+            }));
+
+        var nthProgram = new RemediationProgram(
+            "nth-occurrence-program",
+            nthTemplate,
+            new[]
+            {
+                new BindingRule("header", BindingTarget.ToSlot(SlotRef.Absolute("/section/header")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.Matches("^Section [0-9]+$")),
+                new BindingRule("label", BindingTarget.ToSlot(SlotRef.Absolute("/section/label")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.Contains("Label")),
+                new BindingRule("value", BindingTarget.ToSlot(SlotRef.Absolute("/section/value")),
+                    CandidateSelector.Text(Granularity.Line),
+                    Predicates.Text.Contains("Value").And(Predicates.Anchor.Below("second-header-anchor", maxDistance: 150)))
+            },
+            new[]
+            {
+                new SlotAnchor("second-header-anchor", SlotOccurrenceRef.Nth(SlotRef.Absolute("/section/header"), 2))
+            });
+
+        using var nthSession = document.BeginRemediation(new RemediationSessionConfiguration { StrictConformance = false }).Use(nthProgram);
+        var nthReport = nthSession.DryRun();
+        var nthValueClaims = nthReport.Claims.Where(x => x.ProgramSlot?.Path == "/section/value").ToList();
+        Assert.Single(nthValueClaims);
+    }
+
+    [Fact]
+    public void ProgramEvaluatesMultipleSlotCountAssertions()
+    {
+        using var document = PdfDocument.Create();
+        var page = document.AddPage(PageSize.LETTER);
+        using (var writer = page.GetWriter())
+        {
+            writer.Font(Standard14Font.GetHelvetica(), 12)
+                .TextMove(40, 750).Text("Document Title")
+                .TextMove(40, 710).Text("Paragraph One")
+                .TextMove(40, 690).Text("Paragraph Two")
+                .EndText();
+        }
+
+        var program = new RemediationProgram(
+            "assertions-program",
+            new RemediationTemplate("assertions", "1", PdfUaProfile.PdfUa1,
+                new RemediationTemplateNode("Document", children: new[]
+                {
+                    new RemediationTemplateNode("H1", "title"),
+                    new RemediationTemplateNode("P", "paragraph", occurrence: TemplateOccurrence.ZeroOrMore)
+                })),
+            new[]
+            {
+                new BindingRule("title", BindingTarget.ToSlot(SlotRef.Absolute("/title")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.Equals("Document Title")),
+                new BindingRule("paragraph", BindingTarget.ToSlot(SlotRef.Absolute("/paragraph")),
+                    CandidateSelector.Text(Granularity.Line), Predicates.Text.StartsWith("Paragraph"))
+            },
+            assertions: new[]
+            {
+                new SlotCountAssertion("title-count", SlotRef.Absolute("/title"), expected: AssertionCount.Exactly(1)),
+                new SlotCountAssertion("paragraph-count", SlotRef.Absolute("/paragraph"), expected: new AssertionCount(1)),
+                new SlotCountAssertion("failing-count", SlotRef.Absolute("/title"), expected: AssertionCount.Exactly(5))
+            });
+
+        using var session = document.BeginRemediation(new RemediationSessionConfiguration { StrictConformance = false }).Use(program);
+        session.Suppress(DiagnosticCode.SemanticAssertionFailed, "*", "Testing failing assertion");
+        var report = session.DryRun();
+
+        Assert.Equal(3, report.AssertionOutcomes.Count);
+        Assert.True(report.AssertionOutcomes.Single(x => x.AssertionId == "title-count").Passed);
+        Assert.True(report.AssertionOutcomes.Single(x => x.AssertionId == "paragraph-count").Passed);
+        var failed = report.AssertionOutcomes.Single(x => x.AssertionId == "failing-count");
+        Assert.False(failed.Passed);
+        Assert.Equal("1", failed.Observed);
+        Assert.Equal("exactly 5", failed.Expected);
+    }
+
     private static RemediationProgram Program(
         params BindingRule[] bindings) => Program(bindings, Array.Empty<RemediationAnchor>());
     private static RemediationProgram Program(

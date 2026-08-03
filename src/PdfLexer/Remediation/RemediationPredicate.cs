@@ -1017,6 +1017,14 @@ public static class Predicates
         public static RemediationPredicate InFlowAfter(string anchorId) => new AnchorRelativeRemediationPredicate(AnchorRelativePredicateKind.InFlowAfter, anchorId);
     }
 
+    /// <summary>Compositional region predicate factory helpers.</summary>
+    public static class Region
+    {
+        /// <summary>Matches candidates contained by or intersecting a declared region.</summary>
+        public static RemediationPredicate In(string regionId, GeometryMatchMode mode = GeometryMatchMode.Contains) =>
+            new RegionRemediationPredicate(regionId, mode);
+    }
+
     /// <summary>Flow and zone predicate factory helpers.</summary>
     public static class Flow
     {

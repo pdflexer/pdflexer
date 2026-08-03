@@ -77,7 +77,7 @@ public sealed record CompiledBinding(
 }
 
 /// <summary>Compiles template and binding declarations before document parsing.</summary>
-public static class RemediationProgramCompiler
+public static partial class RemediationProgramCompiler
 {
     private const string InvalidTemplate = "Program.InvalidTemplate";
     private const string DuplicateId = "Program.DuplicateId";
@@ -206,6 +206,8 @@ public static class RemediationProgramCompiler
             }
         }
 
+        ValidateRegions(program, anchorIds, artifactIds, diagnostics);
+
         var assertionIds = new HashSet<string>(StringComparer.Ordinal);
         foreach (var assertion in program.Assertions)
         {
@@ -276,6 +278,8 @@ public static class RemediationProgramCompiler
         var artifacts = source.Artifacts.ToList();
         var assertions = source.Assertions.ToList();
         var boundaries = source.Boundaries.ToList();
+        var regions = source.Regions.ToList();
+        var regionAccounting = source.RegionAccounting.ToList();
 
         RemediationTemplateNode ExpandNode(
             RemediationTemplateNode node,
@@ -373,6 +377,21 @@ public static class RemediationProgramCompiler
                     Qualify(boundary.Id), boundary.Candidates,
                     RewritePredicate(boundary.Predicate, Qualify), boundary.Pages));
             }
+            foreach (var region in fragment.Regions)
+            {
+                regions.Add(new RegionDeclaration(
+                    Qualify(region.Id),
+                    RewriteRegionExpression(region.Expression, Qualify),
+                    region.Pages));
+            }
+            foreach (var accounting in fragment.RegionAccounting)
+            {
+                regionAccounting.Add(new RegionArtifactAccounting(
+                    Qualify(accounting.Id), Qualify(accounting.RegionId), Qualify(accounting.ArtifactId),
+                    accounting.CandidateKinds, accounting.AllowText,
+                    accounting.TextPredicate == null ? null : RewritePredicate(accounting.TextPredicate, Qualify),
+                    accounting.Priority));
+            }
             foreach (var anchor in fragment.Anchors)
             {
                 switch (anchor)
@@ -430,7 +449,10 @@ public static class RemediationProgramCompiler
             artifacts,
             assertions,
             source.TextNormalization,
-            boundaries);
+            boundaries,
+            null,
+            regions,
+            regionAccounting);
 
         OccurrenceBoundary? RewriteBoundary(OccurrenceBoundary? boundary, string? declarationScope) =>
             boundary switch
@@ -474,6 +496,7 @@ public static class RemediationProgramCompiler
                     _ => geometry.Coord
                 }
             },
+            RegionRemediationPredicate region => region with { RegionId = qualifyAnchor(region.RegionId) },
             CompositeRemediationPredicate composite => composite with
             {
                 Left = RewritePredicate(composite.Left, qualifyAnchor),
@@ -648,6 +671,8 @@ public static class RemediationProgramCompiler
             case FontRemediationPredicate:
             case AnchorRelativeRemediationPredicate:
                 return;
+            case RegionRemediationPredicate:
+                return;
             case GeometryRemediationPredicate geometry:
                 ValidateLayoutCoord(geometry.Coord, scope, bindingId, diagnostics);
                 return;
@@ -695,7 +720,9 @@ public static class RemediationProgramCompiler
 
         foreach (var binding in program.Bindings)
         {
-            foreach (var anchorId in EnumerateAnchorReferences(binding.Predicate).Distinct(StringComparer.Ordinal))
+            foreach (var anchorId in EnumerateAnchorReferences(binding.Predicate)
+                         .Concat(EnumerateRegionAnchorReferences(binding.Predicate, program.Regions))
+                         .Distinct(StringComparer.Ordinal))
             {
                 if (!knownAnchors.Contains(anchorId) || !anchors.TryGetValue(anchorId, out var anchor))
                 {

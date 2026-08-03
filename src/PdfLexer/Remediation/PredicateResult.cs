@@ -134,6 +134,8 @@ public sealed class RemediationEvaluationContext
     internal bool FlowsArePreResolved { get; }
 
     internal DocumentFlowIndex? DocumentFlows { get; init; }
+    internal DocumentRegionIndex DocumentRegions { get; init; } = DocumentRegionIndex.Empty;
+
 
     internal IReadOnlyList<RemediationCandidate> DocumentCandidates { get; init; } =
         Array.Empty<RemediationCandidate>();
@@ -193,6 +195,7 @@ public sealed class RemediationEvaluationContext
         TracePredicates = tracePredicates;
         FlowsArePreResolved = source.FlowsArePreResolved;
         DocumentFlows = source.DocumentFlows;
+        DocumentRegions = source.DocumentRegions;
         DocumentCandidates = source.DocumentCandidates;
         CurrentCandidate = source.CurrentCandidate;
         OccurrencePartitions = source.OccurrencePartitions;
@@ -220,6 +223,12 @@ public sealed class RemediationEvaluationContext
 
         return _anchorResolver.Value.Resolve(anchorId);
     }
+    internal ResolvedRegionSegment? ResolveRegion(
+        string regionId,
+        RemediationCandidate candidate,
+        GeometryMatchMode mode = GeometryMatchMode.Contains) =>
+        DocumentRegions.FindContaining(regionId, candidate, mode);
+
 
     /// <summary>Resolves a declared toleranced zone for the current page.</summary>
     public TolerancedZoneResolution? ResolveTolerancedZone(string zoneId)
@@ -305,6 +314,9 @@ public sealed record RemediationClaim(
 
     /// <summary>Original local definition id for a mounted program binding.</summary>
     public string? DefinitionId { get; init; }
+
+    /// <summary>Declared artifact identity used by explicit or region-accounting claims.</summary>
+    public string? ArtifactId { get; init; }
 
     /// <summary>Materialized occurrence assigned by the native partition plan.</summary>
     public string? OccurrenceIdentity { get; internal set; }

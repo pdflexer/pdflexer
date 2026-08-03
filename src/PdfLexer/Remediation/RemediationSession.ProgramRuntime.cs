@@ -80,10 +80,16 @@ public sealed partial class RemediationSession
             skippedClaims,
             diagnostics,
             bindingRuns);
+        var finalRegionIndex = ResolveProgramRegions(
+            compiled, pageStates, allClaims, diagnostics, emitRuntimeDiagnostics: true);
+        var regionResolutions = finalRegionIndex.Segments.Select(x =>
+            new RemediationRegionResolutionOutcome(x.RegionId, x.PageIndex, x.BaseBounds, x.Bounds,
+                x.Confidence, x.Activation?.ToString(), x.PageRole)).ToArray();
+        var regionAbsorptions = ApplyProgramRegionAccounting(
+            compiled, pageStates, finalRegionIndex, allClaims, diagnostics);
 
         foreach (var pageState in pageStates)
         {
-            pageState.ArtifactZones = new Dictionary<string, TolerancedZoneResolution>();
             ApplyLeftoverPolicy(
                 pageState,
                 pageState.TextOwnership,
@@ -207,7 +213,9 @@ public sealed partial class RemediationSession
             unaccountedContent,
             templateDifferences,
             assemblyPlan.Items,
-            occurrencePartitions);
+            occurrencePartitions,
+            regionResolutions,
+            regionAbsorptions);
     }
 
     private RemediationReport CommitProgram()
@@ -453,14 +461,13 @@ public sealed partial class RemediationSession
 
         var anchors = compiled.Program.Anchors.ToDictionary(x => x.Id, StringComparer.Ordinal);
         var activations = new List<ProgramBoundaryActivation>();
+        var regions = ResolveProgramRegions(compiled, pageStates, claims, diagnostics, emitDiagnostics);
         foreach (var pageState in pageStates.Where(x =>
                      declaration.Pages.Includes(x.PageIndex, _document.Pages.Count)))
         {
             var context = CreateProgramEvaluationContext(
                 pageState, claims, anchors,
-                new Dictionary<string, TolerancedZone>(StringComparer.Ordinal),
-                new Dictionary<string, FlowRegion>(StringComparer.Ordinal),
-                diagnostics, compiled.Program.TextNormalization, emitDiagnostics);
+                regions, diagnostics, compiled.Program.TextNormalization, emitDiagnostics);
             foreach (var candidate in SelectCandidates(pageState, declaration.Candidates))
             {
                 if (!declaration.Predicate.Evaluate(context, candidate).IsMatch) continue;
@@ -512,8 +519,6 @@ public sealed partial class RemediationSession
         var priorLayerClaims = new List<RemediationClaim>();
         var anchors = compiled.Program.Anchors
             .ToDictionary(x => x.Id, StringComparer.Ordinal);
-        var emptyZones = new Dictionary<string, TolerancedZone>(StringComparer.Ordinal);
-        var emptyFlows = new Dictionary<string, FlowRegion>(StringComparer.Ordinal);
         IReadOnlyList<RemediationOccurrencePartition> occurrenceSnapshot =
             Array.Empty<RemediationOccurrencePartition>();
 
@@ -522,6 +527,8 @@ public sealed partial class RemediationSession
             var frozenClaims = priorLayerClaims
                 .Where(x => x.Status == ClaimStatus.Applied)
                 .ToArray();
+            var resolvedRegions = ResolveProgramRegions(
+                compiled, pageStates, frozenClaims, diagnostics, emitRuntimeDiagnostics: true);
             var layerClaims = new List<RemediationClaim>();
 
             foreach (var binding in compiled.Layers[layerIndex].OrderBy(x => x.Id, StringComparer.Ordinal))
@@ -541,8 +548,7 @@ public sealed partial class RemediationSession
                         pageState,
                         frozenClaims,
                         anchors,
-                        emptyZones,
-                        emptyFlows,
+                        resolvedRegions,
                         diagnostics,
                         compiled.Program.TextNormalization)
                         .WithProgramBinding(binding.Id, slot);
@@ -703,8 +709,7 @@ public sealed partial class RemediationSession
         PageRemediationState pageState,
         IReadOnlyList<RemediationClaim> claims,
         IReadOnlyDictionary<string, RemediationAnchor> anchors,
-        IReadOnlyDictionary<string, TolerancedZone> zones,
-        IReadOnlyDictionary<string, FlowRegion> flows,
+        DocumentRegionIndex regions,
         List<string> diagnostics,
         TextNormalizationOptions normalization,
         bool emitRuntimeDiagnostics = true)
@@ -726,20 +731,42 @@ public sealed partial class RemediationSession
             pageCount: _document.Pages.Count,
             configuration: Configuration,
             anchors: anchors,
-            tolerancedZones: zones,
-            flowRegions: flows,
+            tolerancedZones: new Dictionary<string, TolerancedZone>(StringComparer.Ordinal),
+            flowRegions: new Dictionary<string, FlowRegion>(StringComparer.Ordinal),
             structuredText: pageState.StructuredText,
             diagnostics: diagnostics,
             textNormalization: normalization,
             flowsArePreResolved: true)
         {
             DocumentFlows = documentFlows,
+            DocumentRegions = regions,
             DocumentCandidates = candidates,
             ProgramDiagnosticScope = $"Program:{_program!.Program.Id}:Page:{pageState.PageIndex + 1}",
             RuntimeDiagnosticSink = emitRuntimeDiagnostics
                 ? diagnostic => _programRuntimeDiagnostics?.Add(diagnostic)
                 : null
         };
+    }
+
+    private DocumentRegionIndex ResolveProgramRegions(
+        CompiledRemediationProgram compiled,
+        IReadOnlyList<PageRemediationState> pageStates,
+        IReadOnlyList<RemediationClaim> claims,
+        List<string> diagnostics,
+        bool emitRuntimeDiagnostics)
+    {
+        if (compiled.Program.Regions.Count == 0) return DocumentRegionIndex.Empty;
+        var anchors = compiled.Program.Anchors.ToDictionary(x => x.Id, StringComparer.Ordinal);
+        return new DocumentRegionResolver(
+            pageStates,
+            claims,
+            Configuration,
+            anchors,
+            compiled.Program.Regions,
+            compiled.Program.TextNormalization,
+            diagnostics,
+            emitRuntimeDiagnostics ? diagnostic => _programRuntimeDiagnostics?.Add(diagnostic) : null)
+            .Resolve();
     }
 
     private IReadOnlyList<OwnedTextSpan> FindProgramConflicts(
@@ -806,6 +833,7 @@ public sealed partial class RemediationSession
         {
             BindingId = binding.Id,
             DefinitionId = binding.DefinitionId,
+            ArtifactId = binding.Target is BindingTarget.Artifact artifact ? artifact.Id : null,
             ProgramSlot = slot,
             PageIndex = pageIndex,
             Status = status,
@@ -970,11 +998,11 @@ public sealed partial class RemediationSession
         foreach (var claim in claims.Where(x => x.Action is ArtifactRemediationAction))
         {
             var artifact = (ArtifactRemediationAction)claim.Action!;
-            var boundItemId = claim.BindingId != null &&
+            var boundItemId = claim.ArtifactId ?? (claim.BindingId != null &&
                               bindingTargets.TryGetValue(claim.BindingId, out var target) &&
                               target is BindingTarget.Artifact declared
                 ? declared.Id
-                : null;
+                : null);
             foreach (var page in claim.Candidates.Where(x => x.PageIndex >= 0).GroupBy(x => x.PageIndex))
             {
                 records.Add(new RemediationArtifactRecord(
@@ -987,12 +1015,14 @@ public sealed partial class RemediationSession
                     artifact.SemanticSubtype));
             }
         }
-        var zonesByPage = pageStates.ToDictionary(x => x.PageIndex, x => x.ArtifactZones);
         return RemediationArtifactInventoryMatcher.Match(
                 ArtifactInventory,
                 records,
                 _document.Pages.Count,
-                zonesByPage)
+                pageStates.ToDictionary(
+                    x => x.PageIndex,
+                    _ => (IReadOnlyDictionary<string, TolerancedZoneResolution>)
+                        new Dictionary<string, TolerancedZoneResolution>(StringComparer.Ordinal)))
             .Select(x => ReportArtifactDifference(x, diagnostics))
             .ToList();
     }
@@ -1312,7 +1342,9 @@ public sealed partial class RemediationSession
         IReadOnlyList<RemediationUnaccountedContent>? unaccountedContent = null,
         IReadOnlyList<RemediationTemplateDifference>? templateDifferences = null,
         IReadOnlyList<RemediationTemplateAssemblyItem>? assembly = null,
-        IReadOnlyList<RemediationOccurrencePartition>? occurrencePartitions = null)
+        IReadOnlyList<RemediationOccurrencePartition>? occurrencePartitions = null,
+        IReadOnlyList<RemediationRegionResolutionOutcome>? regionResolutions = null,
+        IReadOnlyList<RemediationRegionAbsorptionOutcome>? regionAbsorptions = null)
     {
         var runtimeDiagnostics = (_programRuntimeDiagnostics ??
                 throw new InvalidOperationException("Program diagnostic sink was not initialized."))
@@ -1351,7 +1383,9 @@ public sealed partial class RemediationSession
             runtimeDiagnostics,
             bindingEvaluations,
             orderComparisons,
-            occurrencePartitions);
+            occurrencePartitions,
+            regionResolutions,
+            regionAbsorptions);
     }
 
     private bool HasBlockingProgramDiagnostics(IReadOnlyList<string> diagnostics) =>

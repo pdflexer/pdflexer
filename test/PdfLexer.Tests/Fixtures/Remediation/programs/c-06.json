@@ -1,31 +1,26 @@
 {
   "schema": "pdflexer.remediation.program.preview1",
-  "id": "mixed-page-sizes",
+  "id": "c-06",
   "template": {
-    "id": "mixed-page-sizes",
+    "id": "c-06",
     "version": "1",
-    "profile": "PdfUa2",
+    "profile": "PdfUa1",
     "document": {
       "tag": "Document",
       "children": [
         {
           "tag": "H1",
-          "name": "letter-title",
+          "name": "title",
           "children": []
         },
         {
           "tag": "P",
-          "name": "letter-body",
-          "children": []
-        },
-        {
-          "tag": "H1",
-          "name": "a4-title",
+          "name": "bill-to",
           "children": []
         },
         {
           "tag": "P",
-          "name": "a4-body",
+          "name": "name",
           "children": []
         }
       ]
@@ -33,9 +28,9 @@
   },
   "bindings": [
     {
-      "id": "letter-title",
+      "id": "title",
       "target": {
-        "slot": "/letter-title"
+        "slot": "/title"
       },
       "candidates": {
         "kind": "text",
@@ -43,16 +38,17 @@
       },
       "predicate": {
         "kind": "textEquals",
-        "text": "Mixed Size Notice"
+        "text": "Account Statement"
       },
-      "pages": {
-        "kind": "first"
+      "cardinality": {
+        "minMatches": 1,
+        "maxMatches": 1
       }
     },
     {
-      "id": "letter-body",
+      "id": "bill-to",
       "target": {
-        "slot": "/letter-body"
+        "slot": "/bill-to"
       },
       "candidates": {
         "kind": "text",
@@ -60,50 +56,35 @@
       },
       "predicate": {
         "kind": "textEquals",
-        "text": "Letter page content"
+        "text": "Bill To"
       },
-      "pages": {
-        "kind": "first"
+      "cardinality": {
+        "minMatches": 1,
+        "maxMatches": 1
       }
     },
     {
-      "id": "a4-title",
+      "id": "name",
       "target": {
-        "slot": "/a4-title"
+        "slot": "/name"
       },
       "candidates": {
         "kind": "text",
         "granularity": "Line"
       },
       "predicate": {
-        "kind": "textEquals",
-        "text": "Continuation"
+        "kind": "textContains",
+        "text": "Ada"
       },
-      "pages": {
-        "kind": "last"
+      "cardinality": {
+        "minMatches": 1,
+        "maxMatches": 1
       }
     },
     {
-      "id": "a4-body",
+      "id": "footer",
       "target": {
-        "slot": "/a4-body"
-      },
-      "candidates": {
-        "kind": "text",
-        "granularity": "Line"
-      },
-      "predicate": {
-        "kind": "textEquals",
-        "text": "A4 page content"
-      },
-      "pages": {
-        "kind": "last"
-      }
-    },
-    {
-      "id": "page-footer",
-      "target": {
-        "artifact": "page-footer"
+        "artifact": "footer"
       },
       "candidates": {
         "kind": "text",
@@ -118,7 +99,7 @@
   "anchors": [],
   "artifacts": [
     {
-      "id": "page-footer",
+      "id": "footer",
       "type": "Pagination",
       "semanticSubtype": "Footer",
       "includeBoundingBox": true,

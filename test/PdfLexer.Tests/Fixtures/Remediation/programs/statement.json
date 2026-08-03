@@ -4,7 +4,7 @@
   "template": {
     "id": "statement",
     "version": "1",
-    "profile": "PdfUa2",
+    "profile": "PdfUa1",
     "document": {
       "tag": "Document",
       "children": [
@@ -135,7 +135,6 @@
         "text": "Ship To"
       }
     },
-
     {
       "id": "page-footer",
       "target": {
@@ -152,7 +151,11 @@
     }
   ],
   "anchors": [
-    { "id": "ship-to-label-anchor", "kind": "textLabel", "text": "Ship To" }
+    {
+      "id": "ship-to-label-anchor",
+      "kind": "textLabel",
+      "text": "Ship To"
+    }
   ],
   "artifacts": [
     {
@@ -175,7 +178,12 @@
       "root": {
         "tag": "Sect",
         "children": [
-          { "tag": "P", "name": "line", "occurrence": "OneOrMore", "children": [] }
+          {
+            "tag": "P",
+            "name": "line",
+            "occurrence": "OneOrMore",
+            "children": []
+          }
         ]
       },
       "bindings": [],

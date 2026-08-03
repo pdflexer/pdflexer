@@ -15,7 +15,9 @@ public sealed record RemediationProgram
         IEnumerable<SlotCountAssertion>? assertions = null,
         TextNormalizationOptions? textNormalization = null,
         IEnumerable<OccurrenceBoundaryDeclaration>? boundaries = null,
-        IEnumerable<RemediationFragment>? fragments = null)
+        IEnumerable<RemediationFragment>? fragments = null,
+        IEnumerable<RegionDeclaration>? regions = null,
+        IEnumerable<RegionArtifactAccounting>? regionAccounting = null)
     {
         if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Program id is required.", nameof(id));
         Id = id;
@@ -26,6 +28,8 @@ public sealed record RemediationProgram
         Assertions = CopyOptional(assertions, nameof(assertions));
         Boundaries = CopyOptional(boundaries, nameof(boundaries));
         Fragments = CopyOptional(fragments, nameof(fragments));
+        Regions = CopyOptional(regions, nameof(regions));
+        RegionAccounting = CopyOptional(regionAccounting, nameof(regionAccounting));
         TextNormalization = textNormalization ?? TextNormalizationOptions.Default;
 
         static ReadOnlyCollection<T> CopyRequired<T>(IEnumerable<T>? values, string parameter) where T : class =>
@@ -39,7 +43,7 @@ public sealed record RemediationProgram
     }
 
     public string Id { get; }
-    public RemediationTemplate Template { get; }
+    public RemediationTemplate Template { get; init; }
     public IReadOnlyList<BindingRule> Bindings { get; }
     public IReadOnlyList<RemediationAnchor> Anchors { get; }
     public IReadOnlyList<ArtifactDeclaration> Artifacts { get; }
@@ -47,6 +51,8 @@ public sealed record RemediationProgram
     public IReadOnlyList<OccurrenceBoundaryDeclaration> Boundaries { get; }
     public IReadOnlyList<RemediationFragment> Fragments { get; }
     public TextNormalizationOptions TextNormalization { get; }
+    public IReadOnlyList<RegionDeclaration> Regions { get; }
+    public IReadOnlyList<RegionArtifactAccounting> RegionAccounting { get; }
 }
 
 /// <summary>Closed prescriptive structure contract for a document family.</summary>
@@ -64,7 +70,7 @@ public sealed record RemediationTemplate
 
     public string Id { get; }
     public string Version { get; }
-    public PdfUaProfile Profile { get; }
+    public PdfUaProfile Profile { get; init; }
     public RemediationTemplateNode Document { get; }
 }
 
@@ -147,7 +153,9 @@ public sealed record RemediationFragment
         IEnumerable<RemediationAnchor>? anchors = null,
         IEnumerable<ArtifactDeclaration>? artifacts = null,
         IEnumerable<SlotCountAssertion>? assertions = null,
-        IEnumerable<OccurrenceBoundaryDeclaration>? boundaries = null)
+        IEnumerable<OccurrenceBoundaryDeclaration>? boundaries = null,
+        IEnumerable<RegionDeclaration>? regions = null,
+        IEnumerable<RegionArtifactAccounting>? regionAccounting = null)
     {
         if (string.IsNullOrWhiteSpace(id)) throw new ArgumentException("Fragment id is required.", nameof(id));
         Id = id;
@@ -157,6 +165,9 @@ public sealed record RemediationFragment
         Artifacts = Copy(artifacts);
         Assertions = Copy(assertions);
         Boundaries = Copy(boundaries);
+
+        Regions = Copy(regions);
+        RegionAccounting = Copy(regionAccounting);
 
         static IReadOnlyList<T> Copy<T>(IEnumerable<T>? values) where T : class =>
             Array.AsReadOnly((values ?? Array.Empty<T>()).ToArray());
@@ -169,8 +180,9 @@ public sealed record RemediationFragment
     public IReadOnlyList<ArtifactDeclaration> Artifacts { get; }
     public IReadOnlyList<SlotCountAssertion> Assertions { get; }
     public IReadOnlyList<OccurrenceBoundaryDeclaration> Boundaries { get; }
+    public IReadOnlyList<RegionDeclaration> Regions { get; }
+    public IReadOnlyList<RegionArtifactAccounting> RegionAccounting { get; }
 }
-
 /// <summary>Content-independent properties written to a materialized structure element.</summary>
 public sealed record RemediationNodeProperties(
     string? Language = null,

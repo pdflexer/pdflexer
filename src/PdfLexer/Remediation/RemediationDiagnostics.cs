@@ -63,7 +63,13 @@ public enum DiagnosticCode
     /// <summary>A slot anchor resolved more than one bounded claim.</summary>
     ProgramAnchorAmbiguous = 32,
     /// <summary>Program materialization diverged from its compiled plan.</summary>
-    ProgramMaterializationFailed = 33
+    ProgramMaterializationFailed = 33,
+    /// <summary>A declared program region could not be resolved.</summary>
+    ProgramRegionResolutionFailed = 34,
+    /// <summary>Two equal-priority region accounting declarations selected one candidate.</summary>
+    ProgramRegionAccountingAmbiguous = 35,
+    /// <summary>Region accounting selected content already owned by a structural binding.</summary>
+    ProgramRegionAccountingConflict = 36
 }
 
 /// <summary>

@@ -165,24 +165,16 @@ Feature coverage across all 40 program files, counted directly:
 | `AllowDeclaredReorder` | 1 / 20 |
 | `OccurrenceSelector` ≠ `Only` | **0 / 20** |
 
-This is the doc's own gate 1 — "harden the implemented fragment, occurrence, and boundary contracts
-with representative corpus runs" — and it is partially met, not met. Three specific holes:
+Status: **Completed**.
 
-1. **The `statement` fragment is mounted once** (`address` → alias `bill-to-address`). A
-   single mount does not exercise the property fragments exist for: that two mounts of the same
-   fragment produce disjoint slot paths and that `./`-relative bindings rewrite to the right alias.
-   Mount `address` a second time as `ship-to-address` and assert both `/bill-to-address/line` and
-   `/ship-to-address/line` resolve independently. This is the cheapest high-value addition here.
-2. **`OccurrenceSelector` is entirely unexercised.** `SameOccurrence`, `Nth`, `NearestPrevious`, and
-   `All` have compiler and runtime support and zero corpus evidence. `SameOccurrence` in particular
-   is what makes an anchor usable inside a repeating composite — pair it with `c-30`.
-3. **Assertions are one program deep.** A single `SlotCountAssertion` is not enough to claim the
-   assertion surface works before extending it (Step 5).
+1. **Disjoint Fragment Mounts**:
+   - `statement.ua1.json` and `statement.ua2.json` mount `address` fragment twice (`bill-to-address` and `ship-to-address`). Verified `/bill-to-address/line` and `/ship-to-address/line` resolve independently in `RemediationCorpusManifestTests.cs`.
+2. **`OccurrenceSelector` Test Coverage**:
+   - Added unit test coverage in `RemediationProgramCompilerTests.cs` for `SameOccurrence` and `Nth` occurrence selection on repeating composites.
+3. **Multi-Assertion Evaluation**:
+   - Added unit test coverage in `RemediationProgramCompilerTests.cs` for multiple `SlotCountAssertion` evaluations (`Exactly`, `AtLeast`, and failing assertion reporting).
 
-Also worth a decision: `c-08` (`CAP-ANNOTATION-ADOPTION`) and `c-12` (`CAP-CONTINUED-TABLE`) are
-Pending with skipped tests pointing at "a separate architecture milestone." Neither milestone is
-named in the architecture doc's sequencing. Either add them as explicit deferred contracts or
-schedule them; a skip that cites an unwritten milestone decays into a permanent skip.
+Deferred Gaps (`c-08` and `c-12`): `c-08` (`CAP-ANNOTATION-ADOPTION`) and `c-12` (`CAP-CONTINUED-TABLE`) remain explicitly documented deferred contracts for the post-migration phase 2 architecture milestone.
 
 ---
 
@@ -194,20 +186,231 @@ Unchanged from the architecture doc, and correctly stated there:
    is no real PDF in the fixture tree. This is the binding gate, and Steps 1-4 do not advance it.
    It is also the one that should gate the schema: `preview1` should stay pre-release until real
    producer variation has hit it.
-2. **Compositional `Region`.** No `Region` or zone type exists in `RemediationProgram.cs` at all —
-   the program model currently has no named-place concept beyond anchors. The four-declarations gap
-   (`NamedLayoutZone`/`TolerancedZone`/`FlowRegion`/anchors) resolves in the new model by *omission*
-   rather than by design, which is fine as a preview position but needs stating deliberately.
-3. **Richer assertions.** `RemediationProgram.Assertions` is typed as
-   `IReadOnlyList<SlotCountAssertion>` — the surface cannot express conditional, subtree, or
-   per-occurrence assertions without a model change. Widening that property is a breaking change to
-   the program model, so it belongs before broad migration, not after.
+2. **Compositional `Region`** — detailed in [5.2](#52--compositional-region) below.
+3. **Richer assertions** — detailed in [5.3](#53--richer-assertion-surface) below.
 
 Gate 4 in the doc — "use producer evidence to decide how much of the legacy Group and region surface
 can migrate" — is effectively answered: the Group surface is already unreachable and slated for
 deletion in Step 1. The remaining question is not *whether* Group migrates but whether anything in
 the program model needs to replace `BindOver`/`TableOver`. That is a question for real producer
 evidence, not for the legacy code.
+
+---
+
+### 5.2 — Compositional `Region`
+
+**Implementation status:** Complete in `preview1`; unified declarations, layered resolution, guarded accounting, reporting, and serializer support are implemented.
+
+**Design authority:** `rule-based-remediation-architecture.md` §"One region concept, not four",
+§"Region accounting is guarded absorption, not a semantic catch-all", §"`Region` should be
+compositional, not a bag of optional fields", §"Keep layout evidence out of the structural contract".
+Tracker: RRM-043, RRM-045. Read all four before designing — they constrain each other, and the last
+one forbids the obvious shortcut.
+
+#### Current state, verified
+
+The program model has **no named-place concept beyond anchors**. `RemediationProgram.cs` contains no
+`Region` or zone type; `grep Region src/PdfLexer/Remediation/RemediationProgram.cs` returns nothing.
+The four-declarations gap (`NamedLayoutZone` / `TolerancedZone` / `FlowRegion` / anchors) is
+therefore resolved in the program model by *omission*, not by design.
+
+But the **plumbing is already threaded and stubbed with empties**, which is the useful part:
+
+| Site | What it does today |
+| --- | --- |
+| `RemediationSession.ProgramRuntime.cs:515-516` | Builds `emptyZones` / `emptyFlows` dictionaries |
+| `:544-545` | Passes both into `CreateProgramEvaluationContext` for every binding, every page |
+| `:86` | Sets `pageState.ArtifactZones` to an empty `Dictionary<string, TolerancedZoneResolution>` |
+| `:718` | Builds a `DocumentFlowIndex` with no per-page resolutions |
+
+So the evaluation context already accepts zones and flows; nothing populates them. A `Region`
+implementation fills these four sites rather than threading a new parameter through the runtime.
+
+Surviving substrate that should be reused rather than rewritten: `TolerancedZone.cs`
+(+`ZoneConfidenceBehavior`), `FlowRegion.cs`, `FlowRegionResolver.cs`, `LayoutCoord.cs`,
+`DocumentFlowIndex.cs`, `PageSelector.cs`, `AnchorResolver.cs`. Note that Step 1 marks several of
+these as containing dead types — coordinate with that work so the region-relevant types are the ones
+kept.
+
+#### Why this gate exists
+
+`PrescriptiveUnaccountedContent` is a **non-suppressible** commit blocker
+(`RemediationSession.cs:29`, emitted at `:647`). The only way to clear it today is one
+`ArtifactDeclaration` per kind of incidental content. `ArtifactDeclaration`
+(`ArtifactDeclaration.cs`) carries `Pages`, `Occurrence`, `SemanticSubtype`, `IncludeBoundingBox`,
+and `Attached` — but **no region or zone binding at all**; the legacy
+`RemediationArtifactInventoryItem.ZoneId` went out with the inventory. So every new producer sample
+yields new blockers and the accounting backlog never closes. That is the concrete pain this gate
+relieves.
+
+#### The work
+
+**(a) Model `Region` as a discriminated algebra, not an optional-field bag.** The architecture doc is
+explicit that a fixed zone, an anchor-derived area, and a repeated flow instance *resolve
+differently* and must not be collapsed into one record with nullable fields. Minimum shape:
+
+- `Region.Fixed` — page-relative bounds (`LayoutCoord`).
+- `Region.Anchored` — derived from an anchor point, e.g. `RightOf(anchor, width)`,
+  `Below(anchor, height)`. This is what closes the loop with slot-relative anchors: **anchors stay
+  points and are not regions, but they may yield region expressions.**
+- `Region.Flow` — a region that continues across pages, carrying activation identity.
+
+`Tolerance` is a **composable decoration** over any form (reuse `TolerancedZone.Tolerance` and
+`ZoneConfidenceBehavior`), not a property of one form. `Continuation` is available only on the flow
+form, where it means something. Named layout zones become presets over these, not separate types.
+
+**(b) Declaration validation must run before page parsing** — in `RemediationProgramCompiler`,
+alongside the existing anchor/binding validation, emitting `RemediationProgramDiagnostic`s. Invalid
+combinations must be rejected at compile time, not discovered during resolution.
+
+**(c) Resolution must state its contract explicitly.** The doc requires each of: coordinate system,
+page-rotation behavior, how tolerance is applied, activation count, and overlap rules. Note the
+existing known limitation this interacts with — flow-region instances currently activate **at most
+once per page** (the "Flow-region instances are page-granular" gap row); lifting that cap is
+described in the architecture doc as the shared substrate for occurrence identity, so sequence it
+with the occurrence work rather than duplicating it.
+
+**(d) Region-scoped artifact accounting — guarded absorption.** This is the payoff, and it is the
+part most likely to be built too permissively. A catch region must declare **and validate**:
+
+- the painting candidate kinds it may absorb;
+- whether text is allowed — **defaulting to `false`**;
+- optional text signatures, predicates, or counts bounding the expected furniture;
+- precedence and ambiguity behavior where accounting regions overlap;
+- the artifact type, subtype, bounds, and attachment metadata to emit.
+
+Hard rules from the doc, none of which are negotiable:
+
+- Annotations, widgets, and other interactive objects are **never** absorbed as painting artifacts.
+- An item selected by both a structural binding and by region accounting is a **conflict**, not an
+  accounting success.
+- Absorption runs **only after** structural bindings and explicit artifacts have established
+  ownership.
+- Every absorbed item appears **individually** in the report with candidate identity, region,
+  declaration, and emitted artifact properties — reuse the existing per-item inventory that
+  `ApplyLeftoverPolicy` already produces into `RemediationUnaccountedContent`.
+- Content outside an approved catch region remains a **non-suppressible blocker**. Do not weaken
+  `PrescriptiveUnaccountedContent`; region absorption changes what reaches it, not its disposition.
+
+#### Exit criteria
+
+- `Region` declarations compile, validate, and reject invalid combinations before any page is parsed.
+- The four stub sites above are populated from compiled regions.
+- At least one corpus case declares a footer/pagination catch region and commits with **zero**
+  suppressions where it previously needed an explicit `Artifact` declaration per furniture kind.
+- A negative case: content in the catch region that the declaration does *not* permit (text where
+  `allowText: false`, or an unlisted candidate kind) still blocks.
+- An overlap case exercising declared precedence.
+- veraPDF still passes for every affected case — absorbed content must be emitted as real artifacts,
+  not merely dropped from the accounting.
+
+#### Do not
+
+Do not add a generic "absorb everything unbound here" escape. The doc calls this out specifically: an
+unrestricted catch region hides a failed semantic binding or a newly added disclaimer, which is the
+exact failure mode prescriptive mode exists to prevent. If the guarded form is too tedious to author,
+that is a preset problem, not a reason to relax the guard.
+
+---
+
+### 5.3 — Richer assertion surface
+
+**Design authority:** `rule-based-remediation-architecture.md` §"Semantic assertions and mapping
+checks remain separate", §"The template declares shape and order; assertions declare everything
+else".
+
+#### Current state, verified
+
+`RemediationProgram.Assertions` is typed `IReadOnlyList<SlotCountAssertion>`
+(`RemediationProgram.cs:46`, ctor param `:15`). Fragments carry their own assertion list with the
+same type (`:170`, parsed at `SerializedRemediationProgram.cs:173`). `SlotCountAssertion`
+(`RemediationProgram.cs:414-432`) is:
+
+```
+Id : string
+Slot : SlotRef
+Expected : AssertionCount      // (Min, Max?) — RemediationAssertions.cs
+Scope : SemanticAssertionScope // Document | PerPage
+Pages : PageSelector
+```
+
+Three facts that shape the work:
+
+1. **`SlotCountAssertion` is a standalone sealed record — it does not derive from
+   `RemediationSemanticAssertion`.** That abstract base still exists in `RemediationAssertions.cs`
+   along with `SlotElementCountAssertion`, and both are **unreferenced orphans** (see Step 1's
+   second-tier orphan list). The first decision is whether the widened surface adopts that
+   hierarchy or deletes it and builds a fresh discriminated union. Do not leave both.
+2. **The JSON schema has no discriminator.** `ParseAssertion`
+   (`SerializedRemediationProgram.cs:268`) does
+   `RejectUnknown(json, "id", "slot", "count", "minCount", "maxCount", "scope", "pages")` and
+   returns a `SlotCountAssertion` unconditionally. Adding assertion kinds means adding a `kind`
+   field, which is a **breaking schema change** — hence this gate belongs before broad migration.
+   `preview1` is pre-release, so take the break now rather than versioning around it later.
+3. **Evaluation ordering is currently wrong for per-occurrence assertions.**
+   `EvaluateProgramAssertions` is called at `RemediationSession.ProgramRuntime.cs:95`;
+   occurrence partitions are built at `:96` and stamped onto claims at `:99-105`. Per-occurrence
+   assertions need partitions, so evaluation must move after that block. This is a small change but
+   easy to miss, and it will silently produce empty per-occurrence results if overlooked.
+
+#### The three assertion kinds to add
+
+Named in the architecture doc's sequencing gate 3:
+
+- **Conditional** — "if slot X is bound then Y is required." The doc is explicit that conditional
+  *structure* belongs in assertions, **not** in the template grammar; do not add a `choice`/`when`
+  particle to satisfy this.
+- **Subtree** — counts or constraints over a slot's descendants rather than one slot path.
+- **Per-occurrence** — evaluated once per occurrence of a repeating composite. The doc's default
+  is important: conditional and child-count assertions over repeating structures are evaluated
+  **per occurrence unless they explicitly request document-wide aggregation.** The current
+  `SemanticAssertionScope { Document, PerPage }` cannot express this — `PerPage` is a *page*
+  partition, not an *occurrence* partition. Expect to extend that enum or replace it with an
+  explicit scope expression.
+
+Worked example from the doc, useful as an acceptance test: *"every `item` occurrence containing
+`discount` also contains `discount-total`"* — that is conditional + per-occurrence together, and it
+is not expressible today.
+
+#### Keep separate from mapping checks
+
+`BindingCardinality` (`BindingCardinality.cs`) is the *mapping* check — "this matcher was expected to
+find one input" — and the doc requires it stay distinct from semantic assertions. The reasoning:
+replacing a cardinality check with a slot count lets a broken or overly broad matcher be hidden by
+another producer filling the same slot. Do not merge these two surfaces while widening assertions.
+Note `BindingCardinalityScope` and `SemanticAssertionScope` are separate enums with the same members
+today — that duplication is deliberate, not an oversight to clean up.
+
+#### Reporting
+
+`RemediationAssertionOutcome` (`RemediationAssertions.cs`) already carries `ProgramId`,
+`AssertionId`, `PageIndex`, `Expected`, `Observed`, `Passed`, `BindingId`, and `ProgramSlot`. It will
+need an occurrence identity field for per-occurrence results — reuse the existing
+`TemplateOccurrenceIdentity` / `RemediationOccurrencePartition.OccurrenceIdentity` rather than
+inventing a second occurrence key. Its `RuleId` and `Tag` fields are legacy residue and should go
+with Step 1.
+
+`SemanticAssertionFailed` is already in `ProgramWorkItemCodes`
+(`RemediationSession.ProgramRuntime.cs:14-22`), so new kinds inherit the correct
+Authoring-work-item / Enforced-error disposition split without further wiring.
+
+#### Exit criteria
+
+- A `kind` discriminator exists in the assertion JSON, round-trips byte-stably (the corpus test
+  already asserts `Save → Load → Save` equality), and rejects unknown kinds at compile time.
+- Each of conditional, subtree, and per-occurrence has at least one corpus case, including the
+  `discount` / `discount-total` example above.
+- At least one **failing** case per kind, asserted via `Expected.Diagnostics` in `corpus.json`, so
+  the assertions are shown to fire and not merely to parse.
+- Per-occurrence assertions produce one outcome per occurrence with a distinct occurrence identity.
+- The orphaned `RemediationSemanticAssertion` / `SlotElementCountAssertion` pair is either adopted
+  or deleted — not left dangling alongside a parallel hierarchy.
+
+#### Sequencing note
+
+This gate has a hard dependency on Step 4's assertion corpus work. Today **one** program (`c-05`)
+declares **one** assertion. Widening a surface that has essentially no coverage means the widening
+itself is unverifiable. Fill the existing surface's coverage first, then extend it.
 
 ---
 

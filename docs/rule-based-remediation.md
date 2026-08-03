@@ -545,110 +545,45 @@ LayoutCoord.FlowRegion("line-items");
 
 Use `LayoutCoord.Anchor(ruleId, ...)` when the reference is a content claim produced by a rule. Use `LayoutCoord.NamedAnchor(anchorId, ...)` when the reference is a named anchor that may not be tagged itself.
 
-## Toleranced Zones
+## Regions
 
-Toleranced zones describe recurring page areas that may drift slightly across files or page sizes.
-
-```csharp
-var footer = new TolerancedZone(
-    "footer",
-    LayoutCoord.MarginRelative(bottom: 42),
-    Tolerance: 6);
-
-var footerRule = new Rule(
-    "artifact-footer",
-    RemediationActions.Artifact(ArtifactSubtype.Pagination),
-    Predicates.Flow.InZone("footer"),
-    Granularity.Line);
-```
-
-The base bounds come from a `LayoutCoord`; tolerance expands those bounds. Candidates outside the base bounds but inside the tolerated bounds may receive degraded confidence depending on the zone confidence behavior.
-
-## Flow Regions
-
-Flow regions model sections that grow or shrink, such as addresses, terms, or tables.
+Preview programs use one compositional `Region` declaration for fixed, anchor-derived, toleranced, and flowing places. Named layout zones are fixed-region presets; anchors remain separate evidence sources.
 
 ```csharp
-var anchors = new[]
+var regions = new[]
 {
-    RemediationAnchor.TableHeader("line-items-header", "Item", "Qty", "Amount"),
-    RemediationAnchor.TextLabel("subtotal-label", "Subtotal")
+    new RegionDeclaration("footer",
+        new Region.Tolerance(
+            new Region.Fixed(LayoutCoord.Zone(NamedLayoutZone.Footer)),
+            amount: 6)),
+    new RegionDeclaration("line-items",
+        new Region.Flow(
+            new RegionBoundary.Anchor("line-items-header"),
+            new RegionBoundary.Anchor("subtotal-label"),
+            FlowContinuationPolicy.ContinueUntilEnd,
+            maxPages: 12))
 };
-
-var lineItems = new FlowRegion(
-    "line-items",
-    FlowBoundary.Anchor("line-items-header"),
-    FlowBoundary.Anchor("subtotal-label"));
-
-var cellRule = new Rule(
-    "line-item-cell",
-    RemediationActions.Tag("Span"),
-    Predicates.Flow.InFlowRegion("line-items"),
-    Granularity.Word);
 ```
 
-Boundaries can be anchors, toleranced zones, a predicate match, or the page boundary.
+Fixed coordinates use normalized, rotated crop-box space with a lower-left origin and point units. `Region.Anchored` supports `Above`, `Below`, `LeftOf`, `RightOf`, and `Around`. A tolerance expands each segment, clamps it to the normalized page box, and may degrade confidence outside the base bounds. Flow boundaries may reference an anchor, another region, a matching candidate predicate, or the page boundary. Flow activations are ordered and may occur more than once per page.
+
+Use `Predicates.Region.In("footer")` for ordinary binding predicates. It defaults to full containment; `GeometryMatchMode.Intersects` is available for bindings only.
+
+Guarded accounting absorbs eligible unowned painting items after explicit and structural bindings and before leftover validation:
 
 ```csharp
-new FlowRegion(
-    "terms",
-    FlowBoundary.Anchor("terms-heading"),
-    FlowBoundary.PageBoundary,
-    MaxExtent: 240);
-
-new FlowRegion(
-    "summary",
-    FlowBoundary.Anchor("summary-heading"),
-    FlowBoundary.Matching(Predicates.Text.StartsWith("Disclosures")));
+new RegionArtifactAccounting(
+    "footer-pagination",
+    regionId: "footer",
+    artifactId: "pagination",
+    allowText: true,
+    textPredicate: Predicates.Text.Matches(@"^Page [0-9]+( of [0-9]+)? ),
+    priority: 100);
 ```
 
-Flow regions are page-local by default. Use `ContinueUntilEnd` when one activation may span page
-breaks:
+Graphical guards may list only `Image`, `Path`, `Form`, and `Shading`; annotations are never absorbed. Text is denied by default. Enabling it requires a nontrivial text predicate or a finite per-page maximum on the referenced artifact. Explicit artifact ownership wins. Structural ownership is a blocking conflict, and equal highest priorities are ambiguous. Partial intersections and guard failures remain `PrescriptiveUnaccountedContent` blockers. Every successful absorption creates a real artifact claim and appears individually in `RegionAbsorptions`; resolved segments appear in `RegionResolutions`.
 
-```csharp
-new FlowRegion(
-    "line-items",
-    FlowBoundary.Anchor("line-items-header"),
-    FlowBoundary.Anchor("subtotal-label"),
-    ContinuationPolicy: FlowContinuationPolicy.ContinueUntilEnd,
-    ReadingOrderMode: FlowReadingOrderMode.StructuredText,
-    MaxPages: 12);
-```
-
-The start page is page one for `MaxPages`. A continued activation may pass through intermediate
-pages containing neither boundary; a missing end is diagnosed at the limit or document end.
-Repeated start boundaries, such as table headers, remain in the same activation and trim that
-page's segment. A later start after an end creates a new activation.
-
-Classify evaluation completes across the document before Group, and Group completes before Refine.
-MCIDs, candidate ownership, and working content remain page-scoped. Group and Merge cross a page
-break only when adjacent claims share the same continued activation; `SamePage()` always forces a
-split. `Consecutive()` means adjacent in that activation's selected reading order.
-
-`StructuredText` orders by page and structured content order. `GeometryTopToBottom` orders by page,
-then top-to-bottom and left-to-right geometry. The mode controls `FirstIn`, `LastIn`, and `NthIn`
-over the complete activation.
-
-Continued tables produce one `Table` per activation. Numeric `HeaderRows` defaults to
-`TableHeaderRowsScope.LogicalTable`, so the count applies once at the start of the activation.
-Choose `TableHeaderRowsScope.EveryPage` to apply the count independently on every continuation
-page. `HeaderSelector` is additive and remains the authoritative way to identify actually
-repainted headers. JSON rules use `headerRowsScope: "logicalTable"` or `"everyPage"`.
-
-Claim-level `Within("id")` dispatches by declaration kind. Anchors and zones are page-scoped and
-require a single-page bounding box; using them against a cross-page claim is diagnosed rather than
-silently returning no match. Multi-page claims can be within a continued flow only when every page
-segment belongs to the same activation. `THead`, split-row reconstruction, spans, and irregular
-grids remain separate table-model work.
-
-Use ordered flow selectors when the task is field extraction rather than section tagging:
-
-```csharp
-Predicates.Flow.FirstIn("bill-to-address");
-Predicates.Flow.LastIn("terms");
-Predicates.Flow.NthIn("line-items", 0);
-Predicates.Flow.FirstAfter("invoice-label", Predicates.Text.Matches(@"^INV-\d+$"));
-```
+Serialized `preview1` programs use top-level or fragment-local `regions` and `regionAccounting` arrays. Region expressions and boundaries use nested `kind` discriminators; omitted arrays load as empty collections.
 
 ## Actions
 

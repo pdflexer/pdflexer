@@ -81,6 +81,14 @@ public sealed class RemediationCorpusManifestTests
 
                 var dryRun = session.DryRun();
                 AssertExpectedCounts(item, dryRun);
+                if (item.Id == "c-04-c")
+                {
+                    var absorption = Assert.Single(dryRun.RegionAbsorptions);
+                    Assert.Equal("footer", absorption.ArtifactId);
+                    Assert.Equal(ArtifactSubtype.Pagination, absorption.Subtype);
+                    Assert.Equal(ArtifactSemanticSubtype.Footer, absorption.SemanticSubtype);
+                    Assert.Empty(dryRun.Suppressions);
+                }
                 AssertExpectedDiagnostics(item, dryRun);
                 var blocking = dryRun.RuntimeDiagnostics.Where(x => x.IsBlocking).ToArray();
                 if (item.Outcome is RemediationCorpusOutcome.Diagnose or
@@ -181,9 +189,7 @@ public sealed class RemediationCorpusManifestTests
 
         foreach (var expected in item.Expected.Artifacts)
         {
-            var actual = report.BindingEvaluations
-                .Where(x => x.ArtifactId == expected.Key)
-                .Sum(x => x.AppliedClaims);
+            var actual = report.Claims.Count(x => x.ArtifactId == expected.Key);
             Assert.Equal(expected.Value, actual);
         }
     }

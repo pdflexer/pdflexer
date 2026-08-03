@@ -55,11 +55,21 @@ internal static class RemediationCorpusManifest
     {
         if (item.Status != RemediationCorpusStatus.Active)
             throw new InvalidOperationException($"Pending corpus case '{item.Id}' has no executable program.");
-        var relative = profile == PdfUaProfile.PdfUa1 ? item.Programs.Ua1 : item.Programs.Ua2;
+        var relative = item.Programs.Program ?? (profile == PdfUaProfile.PdfUa1 ? item.Programs.Ua1 : item.Programs.Ua2);
         var program = SerializedRemediationProgram.Load(ResolveAsset(relative!));
-        if (program.Template.Profile != profile)
+        if (item.Programs.Program != null)
+        {
+            if (program.Template.Profile != profile)
+            {
+                var template = program.Template with { Profile = profile };
+                program = program with { Template = template };
+            }
+        }
+        else if (program.Template.Profile != profile)
+        {
             throw new InvalidDataException(
                 $"Corpus case '{item.Id}' expected {profile}, but '{relative}' declares {program.Template.Profile}.");
+        }
         return program;
     }
 
@@ -80,17 +90,24 @@ internal static class RemediationCorpusManifest
                 throw new InvalidDataException("Every corpus case requires id, name, inputFactory, and outputBase.");
             if (item.Status == RemediationCorpusStatus.Active)
             {
-                if (string.IsNullOrWhiteSpace(item.Programs.Ua1) || string.IsNullOrWhiteSpace(item.Programs.Ua2))
-                    throw new InvalidDataException($"Active corpus case '{item.Id}' requires UA-1 and UA-2 programs.");
+                var hasProgram = !string.IsNullOrWhiteSpace(item.Programs.Program);
+                var hasSplit = !string.IsNullOrWhiteSpace(item.Programs.Ua1) && !string.IsNullOrWhiteSpace(item.Programs.Ua2);
+                if (!hasProgram && !hasSplit)
+                    throw new InvalidDataException($"Active corpus case '{item.Id}' requires program or (ua1 and ua2) programs.");
+                if (hasProgram && (item.Programs.Ua1 != null || item.Programs.Ua2 != null))
+                    throw new InvalidDataException($"Active corpus case '{item.Id}' cannot declare both program and ua1/ua2.");
                 if (item.Pending != null)
                     throw new InvalidDataException($"Active corpus case '{item.Id}' cannot declare a pending gap.");
-                foreach (var relative in new[] { item.Programs.Ua1!, item.Programs.Ua2! })
+                var declaredPaths = hasProgram
+                    ? new[] { item.Programs.Program! }
+                    : new[] { item.Programs.Ua1!, item.Programs.Ua2! };
+                foreach (var relative in declaredPaths)
                     if (!File.Exists(ResolveAsset(relative)))
                         throw new FileNotFoundException($"Program asset for corpus case '{item.Id}' was not found.", relative);
             }
             else
             {
-                if (!string.IsNullOrWhiteSpace(item.Programs.Ua1) || !string.IsNullOrWhiteSpace(item.Programs.Ua2))
+                if (!string.IsNullOrWhiteSpace(item.Programs.Program) || !string.IsNullOrWhiteSpace(item.Programs.Ua1) || !string.IsNullOrWhiteSpace(item.Programs.Ua2))
                     throw new InvalidDataException($"Pending corpus case '{item.Id}' must not declare executable programs.");
                 if (item.Pending == null || string.IsNullOrWhiteSpace(item.Pending.GapId) ||
                     string.IsNullOrWhiteSpace(item.Pending.Reason))
@@ -129,6 +146,7 @@ internal enum RemediationCorpusOutcome { Commit, Diagnose, AuthoringDiagnose, Co
 [JsonUnmappedMemberHandling(JsonUnmappedMemberHandling.Disallow)]
 internal sealed record RemediationCorpusPrograms
 {
+    public string? Program { get; init; }
     public string? Ua1 { get; init; }
     public string? Ua2 { get; init; }
 }

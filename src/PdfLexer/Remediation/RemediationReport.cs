@@ -28,7 +28,9 @@ public sealed class RemediationReport
         IReadOnlyList<RemediationRuntimeDiagnostic>? runtimeDiagnostics = null,
         IReadOnlyList<RemediationBindingEvaluationSummary>? bindingEvaluations = null,
         IReadOnlyList<RemediationOrderComparison>? orderComparisons = null,
-        IReadOnlyList<RemediationOccurrencePartition>? occurrencePartitions = null)
+        IReadOnlyList<RemediationOccurrencePartition>? occurrencePartitions = null,
+        IReadOnlyList<RemediationRegionResolutionOutcome>? regionResolutions = null,
+        IReadOnlyList<RemediationRegionAbsorptionOutcome>? regionAbsorptions = null)
     {
         Committed = committed;
         AppliedAccessibilitySetup = appliedAccessibilitySetup;
@@ -50,6 +52,8 @@ public sealed class RemediationReport
         BindingEvaluations = bindingEvaluations ?? Array.Empty<RemediationBindingEvaluationSummary>();
         OrderComparisons = orderComparisons ?? Array.Empty<RemediationOrderComparison>();
         OccurrencePartitions = occurrencePartitions ?? Array.Empty<RemediationOccurrencePartition>();
+        RegionResolutions = regionResolutions ?? Array.Empty<RemediationRegionResolutionOutcome>();
+        RegionAbsorptions = regionAbsorptions ?? Array.Empty<RemediationRegionAbsorptionOutcome>();
         
         Outcomes = Claims.Select(CreateOutcome).ToList();
         SkippedOutcomes = SkippedClaims.Select(CreateOutcome).ToList();
@@ -84,6 +88,12 @@ public sealed class RemediationReport
 
     /// <summary>Occurrence partition decisions used by the native preview assembly.</summary>
     public IReadOnlyList<RemediationOccurrencePartition> OccurrencePartitions { get; }
+
+    /// <summary>Resolved segments for all declared regions.</summary>
+    public IReadOnlyList<RemediationRegionResolutionOutcome> RegionResolutions { get; }
+
+    /// <summary>Painting candidates absorbed by guarded region accounting.</summary>
+    public IReadOnlyList<RemediationRegionAbsorptionOutcome> RegionAbsorptions { get; }
 
     /// <summary>Machine-readable differences from the declared structural template.</summary>
     public IReadOnlyList<RemediationTemplateDifference> TemplateDifferences { get; }

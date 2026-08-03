@@ -52,13 +52,6 @@ internal sealed class PageRemediationState
     public IReadOnlyDictionary<Granularity, IReadOnlyList<TextRemediationCandidate>> TextCandidates { get; internal set; } =
         new Dictionary<Granularity, IReadOnlyList<TextRemediationCandidate>>();
 
-    /// <summary>
-    /// Zones referenced by the artifact inventory, resolved once for this page so that plan-time
-    /// grading and apply-time subtype adoption cannot disagree.
-    /// </summary>
-    public IReadOnlyDictionary<string, TolerancedZoneResolution> ArtifactZones { get; internal set; } =
-        new Dictionary<string, TolerancedZoneResolution>(StringComparer.Ordinal);
-
     public int AllocateMcid()
     {
         IsDirty = true;
