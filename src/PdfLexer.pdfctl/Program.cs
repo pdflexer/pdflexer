@@ -1,4 +1,4 @@
-﻿// See https://aka.ms/new-console-template for more information
+// See https://aka.ms/new-console-template for more information
 using DotNext.Collections.Generic;
 using PdfLexer;
 using System.CommandLine.NamingConventionBinder;
@@ -17,7 +17,4 @@ rootCommand.AddCommand(read);
 var search = SearchCmd.Create();
 search.Handler = CommandHandler.Create<SearchCmd>(SearchCmd.Handler);
 rootCommand.AddCommand(search);
-var remediate = RemediateCmd.Create();
-remediate.Handler = CommandHandler.Create<RemediateCmd>(RemediateCmd.Handler);
-rootCommand.AddCommand(remediate);
 return await rootCommand.InvokeAsync(args);

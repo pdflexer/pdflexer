@@ -160,32 +160,6 @@ public class AccessibilityCriticalRegressionTests
     }
 
     [Fact]
-    public void Remediation_Allocator_Uses_Existing_Page_MCIDs()
-    {
-        using var source = PdfDocument.Create();
-        CreatePageWithExistingMcids(source);
-        using var doc = PdfDocument.Open(source.Save());
-        using var session = doc.BeginRemediation(new PdfLexer.Remediation.RemediationSessionConfiguration
-        {
-            StrictConformance = false
-        });
-
-        Assert.Contains("/MCID 3", doc.Pages[0].DumpDecodedContents());
-        Assert.Contains("/Existing BDC", doc.Pages[0].DumpDecodedContents());
-        var existingMcids = doc.Pages[0].GetContentNodes()
-            .OfType<MarkedContentGroup<double>>()
-            .Select(x =>
-                x.Tag.InlineProps?.Get<PdfNumber>(PdfName.MCID) ??
-                x.Tag.PropList?.Get<PdfNumber>(PdfName.MCID))
-            .Where(x => x != null)
-            .Select(x => (int)x!)
-            .OrderBy(x => x)
-            .ToArray();
-        Assert.Equal(new[] { 3, 7 }, existingMcids);
-        Assert.Equal(8, session.AllocateMcid(doc.Pages[0]));
-    }
-
-    [Fact]
     public void StructuralSerializer_Rejects_Duplicate_Page_MCIDs()
     {
         using var doc = PdfDocument.Create();

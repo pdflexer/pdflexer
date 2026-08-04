@@ -2,7 +2,6 @@ using System.Text;
 using PdfLexer.Content.Model;
 using PdfLexer.DOM;
 using PdfLexer.Fonts;
-using PdfLexer.Remediation;
 
 namespace PdfLexer;
 
@@ -87,12 +86,6 @@ public sealed partial class PdfDocument
 
         Catalog[PdfName.Metadata] = CreateAccessibilityMetadata(language, title, _accessibilityConfiguration).Indirect();
         ApplyAccessibilityStructureDefaults();
-    }
-
-    public RemediationSession BeginRemediation(RemediationSessionConfiguration? configuration = null)
-    {
-        ThrowIfAccessibilityAuthoringIsUnsupported(nameof(BeginRemediation));
-        return new RemediationSession(this, configuration ?? new RemediationSessionConfiguration());
     }
 
     private static PdfStream CreateAccessibilityMetadata(string language, string title, AccessibilityConfiguration config)
