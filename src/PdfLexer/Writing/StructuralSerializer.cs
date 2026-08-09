@@ -356,6 +356,44 @@ internal class StructuralSerializer
             attributes.Add(list);
         }
 
+        if (node.PrintFieldRole.HasValue ||
+            !string.IsNullOrEmpty(node.PrintFieldDesc) ||
+            node.PrintFieldChecked.HasValue)
+        {
+            var printField = new PdfDictionary
+            {
+                [PdfName.O] = PdfName.PrintField
+            };
+
+            if (node.PrintFieldRole.HasValue)
+            {
+                printField[PdfName.Role] = node.PrintFieldRole.Value switch
+                {
+                    StructurePrintFieldRole.TextValue => PdfName.tv,
+                    StructurePrintFieldRole.RadioButton => PdfName.rb,
+                    StructurePrintFieldRole.CheckBox => PdfName.cb,
+                    StructurePrintFieldRole.PushButton => PdfName.pb,
+                    _ => PdfName.tv
+                };
+            }
+
+            if (!string.IsNullOrEmpty(node.PrintFieldDesc))
+            {
+                printField[PdfName.Desc] = PdfString.CreateTextString(node.PrintFieldDesc);
+            }
+
+            if (node.PrintFieldChecked.HasValue)
+            {
+                printField[PdfName.@checked] = node.PrintFieldChecked.Value switch
+                {
+                    StructurePrintFieldChecked.On => PdfName.on,
+                    _ => PdfName.off
+                };
+            }
+
+            attributes.Add(printField);
+        }
+
         return attributes;
     }
 

@@ -147,6 +147,8 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName Caret = new("Caret", false);
     public static readonly PdfName Catalog = new("Catalog", false);
     public static readonly PdfName cb = new("cb", false);
+    /// <summary>PrintField attribute: checked state (<c>on</c>/<c>off</c>). ISO uses lowercase <c>checked</c>.</summary>
+    public static readonly PdfName @checked = new("checked", false);
     public static readonly PdfName CCITTFaxDecode = new("CCITTFaxDecode", false);
     public static readonly PdfName Center = new("Center", false);
     public static readonly PdfName Ch = new("Ch", false);
@@ -619,6 +621,8 @@ public class PdfName : PdfObject, IEquatable<PdfName>
     public static readonly PdfName R2L = new("R2L", false);
     public static readonly PdfName Raw = new("Raw", false);
     public static readonly PdfName rb = new("rb", false);
+    /// <summary>PrintField attribute owner entry for field role (<c>tv</c>/<c>rb</c>/<c>cb</c>/<c>pb</c>).</summary>
+    public static readonly PdfName Role = new("Role", false);
     public static readonly PdfName RClosedArrow = new("RClosedArrow", false);
     public static readonly PdfName RD3 = new("RD3", false);
     public static readonly PdfName Record = new("Record", false);

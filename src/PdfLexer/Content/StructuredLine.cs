@@ -32,7 +32,7 @@ public sealed class StructuredLine
     public PdfRect<double> RelativeBoundingBox => relativeBoundingBox ??= pageSpace.Normalize(BoundingBox);
 
     internal StructuredPageSpace PageSpace => pageSpace;
-    internal double BaselineCoordinate => Words.Average(x => x.BaselineCoordinate);
+    public double BaselineCoordinate => Words.Average(x => x.BaselineCoordinate);
     internal double InlineStart => Words.Min(x => x.InlineStart);
     internal double InlineEnd => Words.Max(x => x.InlineEnd);
 }

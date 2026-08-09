@@ -316,6 +316,17 @@ public class StructuralBuilder : IStructureContext
         return this;
     }
 
+    public IStructureContext PrintField(
+        StructurePrintFieldRole? role,
+        string? description = null,
+        StructurePrintFieldChecked? checkedState = null)
+    {
+        _root.PrintFieldRole = role;
+        _root.PrintFieldDesc = description;
+        _root.PrintFieldChecked = checkedState;
+        return this;
+    }
+
     public IStructureContext Ref(StructureNode target)
     {
         if (string.IsNullOrEmpty(target.ID))
@@ -662,6 +673,10 @@ public interface IStructureContext
     IStructureContext TableHeaders(params IStructureContext[] targets);
     IStructureContext TableSummary(string? summary);
     IStructureContext ListNumbering(StructureListNumbering? numbering);
+    IStructureContext PrintField(
+        StructurePrintFieldRole? role,
+        string? description = null,
+        StructurePrintFieldChecked? checkedState = null);
     IStructureContext Ref(StructureNode target);
     IStructureContext Back();
     StructureNode GetRoot();
@@ -961,6 +976,17 @@ public class StructuralContext : IStructureContext
     public IStructureContext ListNumbering(StructureListNumbering? numbering)
     {
         _node.ListNumbering = numbering;
+        return this;
+    }
+
+    public IStructureContext PrintField(
+        StructurePrintFieldRole? role,
+        string? description = null,
+        StructurePrintFieldChecked? checkedState = null)
+    {
+        _node.PrintFieldRole = role;
+        _node.PrintFieldDesc = description;
+        _node.PrintFieldChecked = checkedState;
         return this;
     }
 

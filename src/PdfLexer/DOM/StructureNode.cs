@@ -121,6 +121,21 @@ public class StructureNode
     public StructureListNumbering? ListNumbering { get; set; }
 
     /// <summary>
+    /// PrintField role for non-interactive form structure elements, when authored.
+    /// </summary>
+    public StructurePrintFieldRole? PrintFieldRole { get; set; }
+
+    /// <summary>
+    /// PrintField description (<c>/Desc</c>) for assistive technology, when authored.
+    /// </summary>
+    public string? PrintFieldDesc { get; set; }
+
+    /// <summary>
+    /// PrintField checked state for radio/checkbox print fields, when authored.
+    /// </summary>
+    public StructurePrintFieldChecked? PrintFieldChecked { get; set; }
+
+    /// <summary>
     /// Collection of attribute dictionaries associated with this element.
     /// </summary>
     public List<PdfDictionary> Attributes { get; } = new List<PdfDictionary>();
@@ -383,4 +398,24 @@ public enum StructureListNumbering
     Disc,
     Circle,
     Square
+}
+
+/// <summary>PrintField <c>/Role</c> values (ISO 32000 / PDF/UA).</summary>
+public enum StructurePrintFieldRole
+{
+    /// <summary>Text-value field (<c>tv</c>).</summary>
+    TextValue,
+    /// <summary>Radio button (<c>rb</c>).</summary>
+    RadioButton,
+    /// <summary>Check box (<c>cb</c>).</summary>
+    CheckBox,
+    /// <summary>Push button (<c>pb</c>).</summary>
+    PushButton
+}
+
+/// <summary>PrintField <c>/checked</c> values for radio/checkbox print fields.</summary>
+public enum StructurePrintFieldChecked
+{
+    On,
+    Off
 }
